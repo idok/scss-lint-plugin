@@ -1,0 +1,58 @@
+<idea-plugin version="2">
+    <id>com.wix.scss.lint</id>
+    <name>scss-lint</name>
+    <version>1.0.1</version>
+    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok/eslint-plugin">Ido</vendor>
+    <category>HTML/CSS Development</category>
+    <description><![CDATA[
+      SCSS Lint intellij integration.<br>
+      <p>Support displaying SCSS Lint warnings as intellij inspections</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.lang</depends>
+    <!--<depends>com.intellij.modules.platform</depends>-->
+    <depends>org.jetbrains.plugins.sass</depends>
+
+    <change-notes><![CDATA[
+       <p>1.0.1 First version.</p>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <projectService serviceImplementation="com.scss.settings.Settings"/>
+        <projectConfigurable implementation="com.scss.settings.ScssLintSettingsPage"/>
+        <localInspection language="SCSS" groupPath="SASS/SCSS" shortName="ScssLintInspection"
+                         enabledByDefault="true" level="ERROR"
+                         bundle="com.scss.ScssLintBundle"
+                         implementationClass="com.scss.ScssLintInspection"
+                         displayName="ScssLint" groupKey="scss.inspection.group.name"/>
+        <!--unfair="true" runForWholeFile="true" level="WARNING" -->
+        <externalAnnotator language="SCSS" implementationClass="com.scss.ScssLintExternalAnnotator" />
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+        <component>
+            <implementation-class>com.scss.ScssLintProjectComponent</implementation-class>
+        </component>
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+
+</idea-plugin>

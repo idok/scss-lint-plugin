@@ -64,7 +64,7 @@ public final class ScssLintRunner {
 //            commandLine.setExePath(settings.node);
 //            commandLine.addParameter(settings.eslintExecutablePath);
 //        }
-        commandLine.setExePath("scss-lint");
+        commandLine.setExePath(ScssLintFinder.SCSS_LINT_BASE_NAME);
         commandLine.addParameter(file);
         commandLine.addParameter("-f");
         commandLine.addParameter("XML");
@@ -92,7 +92,7 @@ public final class ScssLintRunner {
 //            commandLine.setExePath(settings.node);
 //            commandLine.addParameter(settings.eslintExecutablePath);
 //        }
-        commandLine.setExePath("scss-lint");
+        commandLine.setExePath(ScssLintFinder.SCSS_LINT_BASE_NAME);
         return commandLine;
     }
 

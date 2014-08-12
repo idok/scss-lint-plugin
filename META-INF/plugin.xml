@@ -2,7 +2,7 @@
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
     <version>1.0.1</version>
-    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok/eslint-plugin">Ido</vendor>
+    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok/scss-lint-plugin">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
       SCSS Lint intellij integration.<br>
@@ -35,7 +35,7 @@
                          enabledByDefault="true" level="ERROR"
                          bundle="com.scss.ScssLintBundle"
                          implementationClass="com.scss.ScssLintInspection"
-                         displayName="ScssLint" groupKey="scss.inspection.group.name"/>
+                         displayName="SCSS Lint" groupKey="scss.inspection.group.name"/>
         <!--unfair="true" runForWholeFile="true" level="WARNING" -->
         <externalAnnotator language="SCSS" implementationClass="com.scss.ScssLintExternalAnnotator" />
     </extensions>

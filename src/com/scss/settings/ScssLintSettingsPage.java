@@ -43,7 +43,7 @@ import java.util.List;
 public class ScssLintSettingsPage implements Configurable {
     public static final String FIX_IT = "Fix it";
     public static final String HOW_TO_USE_SCSSLINT = "How to Use SCSS Lint";
-    public static final String HOW_TO_USE_LINK = "https://github.com/idok/eslint-plugin";
+    public static final String HOW_TO_USE_LINK = "https://github.com/idok/scss-lint-plugin";
     protected Project project;
 
     private JCheckBox pluginEnabledCheckbox;

@@ -32,6 +32,7 @@ import com.scss.utils.scssLint.LintResult;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.plugins.scss.SCSSFileType;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,7 +217,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     }
 
     private static boolean isScssFile(PsiFile file) {
-        return file.getVirtualFile().getExtension().equals("scss");
+        return file.getVirtualFile().getExtension().equals(SCSSFileType.DEFAULT_EXTENSION);
 //        return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
 //        return file.getFileType().equals(SCSSFileType.SCSS);
     }

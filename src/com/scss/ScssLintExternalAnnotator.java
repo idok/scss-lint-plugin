@@ -305,14 +305,14 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             }
             Document document = PsiDocumentManager.getInstance(file.getProject()).getDocument(file);
             if (document == null) {
-                component.showInfoNotification("Error running ScssLint inspection: Could not get document for file " + file.getName(), NotificationType.WARNING);
+                component.showInfoNotification("Error running SCSS Lint inspection: Could not get document for file " + file.getName(), NotificationType.WARNING);
                 System.out.println("Could not get document for file " + file.getName());
                 return null;
             }
             return new ScssLintAnnotationResult(collectedInfo, result);
         } catch (Exception e) {
             LOG.error("Error running ScssLint inspection: ", e);
-            ScssLintProjectComponent.showNotification("Error running ScssLint inspection: " + e.getMessage(), NotificationType.ERROR);
+            ScssLintProjectComponent.showNotification("Error running SCSS Lint inspection: " + e.getMessage(), NotificationType.ERROR);
         }
         return null;
     }

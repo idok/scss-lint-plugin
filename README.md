@@ -14,3 +14,14 @@ To get started, you need to set the SCSS Lint plugin settings:<br/>
 * Go to preferences, SCSS Lint plugin page and check the Enable plugin.
 * Set the .scss-lint.yml file, or scss-lint will use the default settings.
 * By default, SCSS Lint plugin annotate the editor with warning or error based on the SCSS Lint configuration, you can check the 'Treat all SCSS Lint issues as warnings' checkbox to display all issues from SCSS Lint as warnings.
+
+Configuration:<br/>
+![ESLint config](https://raw.githubusercontent.com/idok/scss-lint-plugin/master/docs/Settings.png)
+
+
+Inspection:<br/>
+![ESLint inline](https://raw.githubusercontent.com/idok/scss-lint-plugin/master/docs/Rule.png)
+
+
+Analyze Code:<br/>
+![ESLint inline](https://raw.githubusercontent.com/idok/scss-lint-plugin/master/docs/Inspection.png)

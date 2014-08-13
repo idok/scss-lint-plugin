@@ -25,7 +25,7 @@ public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
     protected void doTest(final String file) {
         Project project = myFixture.getProject();
         Settings settings = Settings.getInstance(project);
-//        settings.eslintExecutable = ScssLintRunnerTest.ESLINT_BIN;
+//        settings.scssLintExecutable = ScssLintRunnerTest.SCSS_LINT_BIN;
 //        settings.scssLintConfigFile = getTestDataPath() + "/.eslintrc";
 //        settings.nodeInterpreter = ScssLintRunnerTest.NODE_INTERPRETER;
 //        settings.rulesPath = "";

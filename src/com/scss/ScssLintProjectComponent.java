@@ -26,7 +26,7 @@ public class ScssLintProjectComponent implements ProjectComponent {
 
     public String scssLintConfigFile;
     public String rulesPath;
-    public String eslintExecutable;
+    public String scssLintExecutable;
     public String nodeInterpreter;
     public boolean treatAsWarnings;
     public boolean pluginEnabled;
@@ -78,7 +78,30 @@ public class ScssLintProjectComponent implements ProjectComponent {
         return settingValidStatus;
     }
 
-    public boolean validateSettings() {
+    public void validateSettings() {
+        settingValidStatus = isValid();
+        if (!settingValidStatus) {
+            return;
+        }
+
+//        if (StringUtil.isNotEmpty(settings.scssLintExecutable)) {
+//            File file = new File(project.getBasePath(), settings.scssLintExecutable);
+//            if (!file.exists()) {
+//                showErrorConfigNotification(ESLintBundle.message("eslint.rules.dir.does.not.exist", file.toString()));
+//                LOG.debug("Rules directory not found");
+//                settingValidStatus = false;
+//                return false;
+//            }
+//        }
+        scssLintExecutable = settings.scssLintExecutable;
+        scssLintConfigFile = settings.scssLintConfigFile;
+        rulesPath = settings.rulesPath;
+        nodeInterpreter = settings.nodeInterpreter;
+        treatAsWarnings = settings.treatAllIssuesAsWarnings;
+        pluginEnabled = settings.pluginEnabled;
+    }
+
+    public boolean isValid() {
         // do not validate if disabled
         if (!settings.pluginEnabled) {
             return true;
@@ -91,33 +114,20 @@ public class ScssLintProjectComponent implements ProjectComponent {
         if (!status) {
             return false;
         }
-        status = validateField("ESLint bin", settings.eslintExecutable, false, false, true);
+        status = validateField("SCSS Lint bin", settings.scssLintExecutable, false, false, true);
         if (!status) {
             return false;
         }
-
-//        if (StringUtil.isNotEmpty(settings.eslintExecutable)) {
-//            File file = new File(project.getBasePath(), settings.eslintExecutable);
-//            if (!file.exists()) {
-//                showErrorConfigNotification(ESLintBundle.message("eslint.rules.dir.does.not.exist", file.toString()));
-//                LOG.debug("Rules directory not found");
-//                settingValidStatus = false;
-//                return false;
-//            }
-//        }
-        eslintExecutable = settings.eslintExecutable;
-        scssLintConfigFile = settings.scssLintConfigFile;
-        rulesPath = settings.rulesPath;
-        nodeInterpreter = settings.nodeInterpreter;
-        treatAsWarnings = settings.treatAllIssuesAsWarnings;
-        pluginEnabled = settings.pluginEnabled;
-
-        settingValidStatus = true;
         return true;
     }
 
     private boolean validateField(String fieldName, String value, boolean shouldBeAbsolute, boolean allowEmpty, boolean isFile) {
         ValidationStatus r = FileUtils.validateProjectPath(shouldBeAbsolute ? null : project, value, allowEmpty, isFile);
+        if (r == ValidationStatus.IS_EMPTY && !allowEmpty) {
+            String msg = ScssLintBundle.message("scss.path.is.empty", fieldName);
+            validationFailed(msg);
+            return false;
+        }
         if (isFile) {
             if (r == ValidationStatus.NOT_A_FILE) {
                 String msg = ScssLintBundle.message("scss.file.is.not.a.file", fieldName, value);

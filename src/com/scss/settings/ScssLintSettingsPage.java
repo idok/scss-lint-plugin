@@ -1,6 +1,7 @@
 package com.scss.settings;
 
 import com.scss.ScssLintProjectComponent;
+import com.scss.utils.FileUtils;
 import com.scss.utils.ScssLintFinder;
 import com.scss.utils.ScssLintRunner;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
@@ -62,11 +63,13 @@ public class ScssLintSettingsPage implements Configurable {
 //    private JLabel nodeInterpreterLabel;
     private JCheckBox treatAllIssuesCheckBox;
     private JLabel versionLabel;
+    private JLabel scssLintExeLabel;
+    private TextFieldWithHistoryWithBrowseButton scssLintExeField;
     private final PackagesNotificationPanel packagesNotificationPanel;
 
     public ScssLintSettingsPage(@NotNull final Project project) {
         this.project = project;
-//        configESLintBinField();
+        configESLintBinField();
         configScssLintConfigField();
 //        configNodeField();
 //        searchForConfigInRadioButton.addItemListener(new ItemListener() {
@@ -99,7 +102,7 @@ public class ScssLintSettingsPage implements Configurable {
                 updateLaterInEDT();
             }
         };
-//        eslintBinField2.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
+        scssLintExeField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
         scssLintConfigFile.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
 //        nodeInterpreterField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
 //        rulesPathField.getDocument().addDocumentListener(docAdp);
@@ -124,21 +127,21 @@ public class ScssLintSettingsPage implements Configurable {
 //        rulesPathField.setEnabled(enabled);
         searchForConfigInRadioButton.setEnabled(enabled);
         useProjectConfigRadioButton.setEnabled(enabled);
-//        eslintBinField2.setEnabled(enabled);
+        scssLintExeField.setEnabled(enabled);
 //        nodeInterpreterField.setEnabled(enabled);
         ScssLintConfigFilePathLabel.setEnabled(enabled);
 //        rulesDirectoryLabel.setEnabled(enabled);
-//        pathToEslintBinLabel.setEnabled(enabled);
+        scssLintExeLabel.setEnabled(enabled);
 //        nodeInterpreterLabel.setEnabled(enabled);
         treatAllIssuesCheckBox.setEnabled(enabled);
     }
 
     private void validate() {
         List<ScssLintValidationInfo> errors = new ArrayList<ScssLintValidationInfo>();
-//        if (!validatePath(eslintBinField2.getChildComponent().getText(), false)) {
-//            ScssLintValidationInfo error = new ScssLintValidationInfo(eslintBinField2.getChildComponent().getTextEditor(), "Path to eslint is invalid {{LINK}}", FIX_IT);
-//            errors.add(error);
-//        }
+        if (!validatePath(scssLintExeField.getChildComponent().getText(), false)) {
+            ScssLintValidationInfo error = new ScssLintValidationInfo(scssLintExeField.getChildComponent().getTextEditor(), "Path to scss lint exe is invalid {{LINK}}", FIX_IT);
+            errors.add(error);
+        }
         if (!validatePath(scssLintConfigFile.getChildComponent().getText(), true)) {
             ScssLintValidationInfo error = new ScssLintValidationInfo(scssLintConfigFile.getChildComponent().getTextEditor(), "Path to scss-lint config is invalid {{LINK}}", FIX_IT); //Please correct path to
             errors.add(error);
@@ -165,20 +168,20 @@ public class ScssLintSettingsPage implements Configurable {
     private void getVersion() {
         if (settings != null &&
 //                settings.node.equals(nodeInterpreterField.getChildComponent().getText()) &&
-//                settings.eslintExecutablePath.equals(eslintBinField2.getChildComponent().getText()) &&
+                settings.scssLintExe.equals(scssLintExeField.getChildComponent().getText()) &&
                 settings.cwd.equals(project.getBasePath())) {
             return;
         }
         settings = new ScssLintRunner.ScssLintSettings();
 //        settings.node = nodeInterpreterField.getChildComponent().getText();
-//        settings.eslintExecutablePath = eslintBinField2.getChildComponent().getText();
+        settings.scssLintExe = scssLintExeField.getChildComponent().getText();
         settings.cwd = project.getBasePath();
         try {
             ProcessOutput out = ScssLintRunner.version(settings);
             if (out.getExitCode() == 0) {
                 versionLabel.setText(out.getStdout().trim());
             }
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -219,22 +222,22 @@ public class ScssLintSettingsPage implements Configurable {
         return true;
     }
 
-//    private void configESLintBinField() {
-//        TextFieldWithHistory textFieldWithHistory = eslintBinField2.getChildComponent();
-//        textFieldWithHistory.setHistorySize(-1);
-//        textFieldWithHistory.setMinimumAndPreferredWidth(0);
-//
-//        SwingHelper.addHistoryOnExpansion(textFieldWithHistory, new NotNullProducer<List<String>>() {
-//            @NotNull
-//            public List<String> produce() {
+    private void configESLintBinField() {
+        TextFieldWithHistory textFieldWithHistory = scssLintExeField.getChildComponent();
+        textFieldWithHistory.setHistorySize(-1);
+        textFieldWithHistory.setMinimumAndPreferredWidth(0);
+
+        SwingHelper.addHistoryOnExpansion(textFieldWithHistory, new NotNullProducer<List<String>>() {
+            @NotNull
+            public List<String> produce() {
 //                File projectRoot = new File(project.getBaseDir().getPath());
-//                List<File> newFiles = ScssLintFinder.searchForESLintBin(projectRoot);
-//                return FileUtils.toAbsolutePath(newFiles);
-//            }
-//        });
-//
-//        SwingHelper.installFileCompletionAndBrowseDialog(project, eslintBinField2, "Select ESLint.js cli", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
-//    }
+                List<File> newFiles = ScssLintFinder.listAllPossibleScssLintExe(); //searchForESLintBin(projectRoot);
+                return FileUtils.toAbsolutePath(newFiles);
+            }
+        });
+
+        SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintExeField, "Select SCSS Lint exe", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+    }
 
     private void configScssLintConfigField() {
         TextFieldWithHistory textFieldWithHistory = scssLintConfigFile.getChildComponent();
@@ -290,7 +293,7 @@ public class ScssLintSettingsPage implements Configurable {
     @Override
     public boolean isModified() {
         return pluginEnabledCheckbox.isSelected() != getSettings().pluginEnabled
-//                || !eslintBinField2.getChildComponent().getText().equals(getSettings().eslintExecutable)
+                || !scssLintExeField.getChildComponent().getText().equals(getSettings().scssLintExecutable)
 //                || !nodeInterpreterField.getChildComponent().getText().equals(getSettings().nodeInterpreter)
                 || treatAllIssuesCheckBox.isSelected() != getSettings().treatAllIssuesAsWarnings
 //                || !rulesPathField.getText().equals(getSettings().rulesPath)
@@ -310,7 +313,7 @@ public class ScssLintSettingsPage implements Configurable {
     protected void saveSettings() {
         Settings settings = getSettings();
         settings.pluginEnabled = pluginEnabledCheckbox.isSelected();
-//        settings.eslintExecutable = eslintBinField2.getChildComponent().getText();
+        settings.scssLintExecutable = scssLintExeField.getChildComponent().getText();
 //        settings.nodeInterpreter = nodeInterpreterField.getChildComponent().getText();
         settings.scssLintConfigFile = getLintConfigFile();
 //        settings.rulesPath = rulesPathField.getText();
@@ -322,7 +325,7 @@ public class ScssLintSettingsPage implements Configurable {
     protected void loadSettings() {
         Settings settings = getSettings();
         pluginEnabledCheckbox.setSelected(settings.pluginEnabled);
-//        eslintBinField2.getChildComponent().setText(settings.eslintExecutable);
+        scssLintExeField.getChildComponent().setText(settings.scssLintExecutable);
         scssLintConfigFile.getChildComponent().setText(settings.scssLintConfigFile);
 //        nodeInterpreterField.getChildComponent().setText(settings.nodeInterpreter);
 //        rulesPathField.setText(settings.rulesPath);

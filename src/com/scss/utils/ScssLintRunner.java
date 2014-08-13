@@ -23,27 +23,33 @@ public final class ScssLintRunner {
     private static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(120L);
 
     public static class ScssLintSettings {
-//        public String node;
-//        public String eslintExecutablePath;
-//        public String rules;
+        public ScssLintSettings() {
+        }
+
+        public ScssLintSettings(String config, String cwd, String targetFile, String scssLintExe) {
+            this.config = config;
+            this.cwd = cwd;
+            this.targetFile = targetFile;
+            this.scssLintExe = scssLintExe;
+        }
+
         public String config;
         public String cwd;
         public String targetFile;
+        public String scssLintExe;
     }
 
-    public static ScssLintSettings buildSettings(@NotNull String cwd, @NotNull String path, @NotNull String nodeInterpreter, @NotNull String eslintBin, @Nullable String eslintrc, @Nullable String rulesdir) {
+    public static ScssLintSettings buildSettings(@NotNull String cwd, @NotNull String path, @NotNull String scssLintExe, @Nullable String config) {
         ScssLintSettings settings = new ScssLintSettings();
         settings.cwd = cwd;
-//        settings.eslintExecutablePath = eslintBin;
-//        settings.node = nodeInterpreter;
-//        settings.rules = rulesdir;
-        settings.config = eslintrc;
+        settings.scssLintExe = scssLintExe;
+        settings.config = config;
         settings.targetFile = path;
         return settings;
     }
 
-    public static LintResult runLint(@NotNull String cwd, @NotNull String file, @Nullable String config) throws ExecutionException {
-        ProcessOutput out = lint(cwd, file, config);
+    public static LintResult runLint(@NotNull String cwd, @NotNull String file, @NotNull String scssLintExe, @Nullable String config) throws ExecutionException {
+        ProcessOutput out = lint(cwd, file, scssLintExe, config);
         LintResult result = new LintResult();
 //        if (out.getExitCode() == 0) {
 //        } else {
@@ -54,7 +60,7 @@ public final class ScssLintRunner {
     }
 
     @NotNull
-    public static ProcessOutput lint(@NotNull String cwd, @NotNull String file, @Nullable String config) throws ExecutionException {
+    public static ProcessOutput lint(@NotNull String cwd, @NotNull String file, @NotNull String scssLintExe, @Nullable String config) throws ExecutionException {
         //scss-lint one.scss -f XML
         GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setWorkDirectory(cwd);
@@ -64,7 +70,8 @@ public final class ScssLintRunner {
 //            commandLine.setExePath(settings.node);
 //            commandLine.addParameter(settings.eslintExecutablePath);
 //        }
-        commandLine.setExePath(ScssLintFinder.SCSS_LINT_BASE_NAME);
+        commandLine.setExePath(scssLintExe);
+//        GeneralCommandLine commandLine = createCommandLine(buildSettings(cwd, file, scssLintExe, config));
         commandLine.addParameter(file);
         commandLine.addParameter("-f");
         commandLine.addParameter("XML");
@@ -86,6 +93,7 @@ public final class ScssLintRunner {
     private static GeneralCommandLine createCommandLine(@NotNull ScssLintSettings settings) {
         GeneralCommandLine commandLine = new GeneralCommandLine();
         commandLine.setWorkDirectory(settings.cwd);
+        commandLine.setExePath(settings.scssLintExe);
 //        if (SystemInfo.isWindows) {
 //            commandLine.setExePath(settings.eslintExecutablePath);
 //        } else {

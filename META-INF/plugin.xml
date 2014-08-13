@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok/scss-lint-plugin">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
@@ -14,6 +14,7 @@
     <depends>org.jetbrains.plugins.sass</depends>
 
     <change-notes><![CDATA[
+       <p>1.0.4 Bug fixes.</p>
        <p>1.0.3 Fix execution issue on windows.</p>
        <p>1.0.2 Bug fixes.</p>
        <p>1.0.1 First version.</p>

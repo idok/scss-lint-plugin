@@ -277,12 +277,14 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
         try {
+            String f = com.wix.Util.f();
+
             PsiFile file = collectedInfo.psiFile;
             if (!isScssFile(file)) return null;
             ScssLintProjectComponent component = file.getProject().getComponent(ScssLintProjectComponent.class);
-//            if (!component.isSettingsValid() || !component.isEnabled()) {
-//                return null;
-//            }
+            if (!component.isSettingsValid() || !component.isEnabled()) {
+                return null;
+            }
 
 //            ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
             String relativeFile;
@@ -291,8 +293,8 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
                 return null;
             }
             relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.file);
-            LintResult result = ScssLintRunner.runLint(file.getProject().getBasePath(), relativeFile, component.scssLintConfigFile);
-            // , component.nodeInterpreter, component.eslintExecutable, component.scssLintConfigFile, component.rulesPath);
+            LintResult result = ScssLintRunner.runLint(file.getProject().getBasePath(), relativeFile, component.scssLintExecutable, component.scssLintConfigFile);
+            // , component.nodeInterpreter, component.scssLintExecutable, component.scssLintConfigFile, component.rulesPath);
 
             if (actualCodeFile.isTemp) {
                 boolean isDeleted = actualCodeFile.file.delete();

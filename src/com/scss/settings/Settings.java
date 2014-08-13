@@ -17,7 +17,7 @@ public class Settings implements PersistentStateComponent<Settings> {
 
     public String scssLintConfigFile = "";
     public String rulesPath = DEFAULT_RULES_DIR;
-    public String eslintExecutable = "";
+    public String scssLintExecutable = "";
     public String nodeInterpreter;
     public boolean treatAllIssuesAsWarnings;
     public boolean pluginEnabled = DEFAULT_PLUGIN_ENABLED;
@@ -42,6 +42,6 @@ public class Settings implements PersistentStateComponent<Settings> {
     }
 
     public String getVersion() {
-        return nodeInterpreter + eslintExecutable + scssLintConfigFile + rulesPath;
+        return nodeInterpreter + scssLintExecutable + scssLintConfigFile + rulesPath;
     }
 }

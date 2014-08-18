@@ -85,6 +85,9 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         }
 
         // TODO consider adding a fix to edit configuration file
+        if (annotationResult.result.lint.file == null) {
+            return;
+        }
         List<Lint.Issue> issues = annotationResult.result.lint.file.issues;
         ScssLintProjectComponent component = annotationResult.input.project.getComponent(ScssLintProjectComponent.class);
         int tabSize = 4;
@@ -222,57 +225,6 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
     }
 
-    private static final Key<ThreadLocalActualFile> SCSS_LINT_TEMP_FILE_KEY = Key.create("SCSS_LINT_TEMP_FILE_KEY");
-
-    @Nullable
-    private static ActualFile getOrCreateActualFile(@NotNull Key<ThreadLocalActualFile> key, @NotNull VirtualFile virtualFile, @Nullable String content) {
-        FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-        if (!fileDocumentManager.isFileModified(virtualFile)) {
-            File file = new File(virtualFile.getPath());
-            if (file.isFile()) {
-                return new ActualFile(file);
-            }
-        }
-        ThreadLocalActualFile threadLocal = key.get(virtualFile);
-        if (threadLocal == null) {
-            threadLocal = virtualFile.putUserDataIfAbsent(key, new ThreadLocalActualFile(virtualFile));
-        }
-        File file = threadLocal.getFile();
-        if (file == null) {
-            return null;
-        }
-        if (content == null) {
-            Document document = fileDocumentManager.getDocument(virtualFile);
-            if (document != null) {
-                content = document.getText();
-            }
-        }
-        if (content == null) {
-            return null;
-        }
-        try {
-            FileUtil.writeToFile(file, content);
-            return new ActualFile(file, threadLocal.isTemp);
-        } catch (IOException e) {
-            LOG.warn("Can not write to " + file.getAbsolutePath(), e);
-        }
-        return null;
-    }
-
-    static class ActualFile {
-        ActualFile(File file, boolean isTemp) {
-            this.file = file;
-            this.isTemp = isTemp;
-        }
-
-        ActualFile(File file) {
-            this(file, false);
-        }
-
-        File file;
-        boolean isTemp;
-    }
-
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
@@ -288,20 +240,15 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
 
 //            ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
             String relativeFile;
-            ActualFile actualCodeFile = getOrCreateActualFile(SCSS_LINT_TEMP_FILE_KEY, file.getVirtualFile(), collectedInfo.fileContent);
-            if (actualCodeFile == null || actualCodeFile.file == null) {
+            ActualFile actualCodeFile = ActualFile.getOrCreateActualFile(file.getVirtualFile(), collectedInfo.fileContent);
+            if (actualCodeFile == null || actualCodeFile.getFile() == null) {
                 return null;
             }
-            relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.file);
+            relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.getFile());
             LintResult result = ScssLintRunner.runLint(file.getProject().getBasePath(), relativeFile, component.scssLintExecutable, component.scssLintConfigFile);
             // , component.nodeInterpreter, component.scssLintExecutable, component.scssLintConfigFile, component.rulesPath);
+            actualCodeFile.deleteTemp();
 
-            if (actualCodeFile.isTemp) {
-                boolean isDeleted = actualCodeFile.file.delete();
-                if (!isDeleted) {
-                    LOG.debug("Failed to delete temp file");
-                }
-            }
             if (StringUtils.isNotEmpty(result.errorOutput)) {
                 component.showInfoNotification(result.errorOutput, NotificationType.WARNING);
                 return null;

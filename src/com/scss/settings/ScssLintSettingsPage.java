@@ -5,7 +5,6 @@ import com.scss.utils.FileUtils;
 import com.scss.utils.ScssLintFinder;
 import com.scss.utils.ScssLintRunner;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -231,7 +230,7 @@ public class ScssLintSettingsPage implements Configurable {
             @NotNull
             public List<String> produce() {
 //                File projectRoot = new File(project.getBaseDir().getPath());
-                List<File> newFiles = ScssLintFinder.listAllPossibleScssLintExe(); //searchForESLintBin(projectRoot);
+                List<File> newFiles = ScssLintFinder.findAllScssLintExe(); //searchForESLintBin(projectRoot);
                 return FileUtils.toAbsolutePath(newFiles);
             }
         });

@@ -21,6 +21,7 @@ public final class ScssLintFinder {
     @NotNull
     public static List<File> listAllPossibleScssLintExe() {
         Set<File> exes = ContainerUtil.newLinkedHashSet();
+        // TODO looks like on windows it only searches system path and not user's
         List<File> fromPath = PathEnvironmentVariableUtil.findAllExeFilesInPath(SCSS_LINT_BASE_NAME);
         exes.addAll(fromPath);
         return ContainerUtil.newArrayList(exes);
@@ -28,7 +29,7 @@ public final class ScssLintFinder {
 
     /**
      * find possible scss-lint config files
-     * @param projectRoot
+     * @param projectRoot project root
      * @return
      */
     public static List<String> searchForLintConfigFiles(final File projectRoot) {

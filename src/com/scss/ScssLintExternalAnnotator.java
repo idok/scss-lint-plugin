@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.plugins.scss.SCSSFileType;
+import org.jetbrains.plugins.scss.psi.SCSSFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -217,9 +218,8 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     }
 
     private static boolean isScssFile(PsiFile file) {
-        return file.getVirtualFile().getExtension().equals(SCSSFileType.DEFAULT_EXTENSION);
-//        return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
-//        return file.getFileType().equals(SCSSFileType.SCSS);
+//        return file.getVirtualFile().getExtension().equals(SCSSFileType.DEFAULT_EXTENSION);
+        return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
     }
 
     private static final Key<ThreadLocalActualFile> SCSS_LINT_TEMP_FILE_KEY = Key.create("SCSS_LINT_TEMP_FILE_KEY");

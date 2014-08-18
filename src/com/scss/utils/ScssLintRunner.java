@@ -49,13 +49,17 @@ public final class ScssLintRunner {
     }
 
     public static LintResult runLint(@NotNull String cwd, @NotNull String file, @NotNull String scssLintExe, @Nullable String config) throws ExecutionException {
-        ProcessOutput out = lint(cwd, file, scssLintExe, config);
         LintResult result = new LintResult();
+        try {
+            ProcessOutput out = lint(cwd, file, scssLintExe, config);
 //        if (out.getExitCode() == 0) {
 //        } else {
-            result.lint = Lint.read(out.getStdout());
             result.errorOutput = out.getStderr();
+            result.lint = Lint.read(out.getStdout());
 //        }
+        } catch (Exception e) {
+            result.errorOutput = e.toString();
+        }
         return result;
     }
 
@@ -100,7 +104,6 @@ public final class ScssLintRunner {
 //            commandLine.setExePath(settings.node);
 //            commandLine.addParameter(settings.eslintExecutablePath);
 //        }
-        commandLine.setExePath(ScssLintFinder.SCSS_LINT_BASE_NAME);
         return commandLine;
     }
 

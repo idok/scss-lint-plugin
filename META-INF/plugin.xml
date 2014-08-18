@@ -1,25 +1,26 @@
-<idea-plugin version="2">
+<idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.0.4</version>
-    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok/scss-lint-plugin">Ido</vendor>
+    <version>1.0.6</version>
+    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
       SCSS Lint intellij integration.<br>
       <p>Support displaying SCSS Lint warnings as intellij inspections</p>
     ]]></description>
 
-    <depends>com.intellij.modules.lang</depends>
-    <!--<depends>com.intellij.modules.platform</depends>-->
-    <depends>org.jetbrains.plugins.sass</depends>
-
     <change-notes><![CDATA[
+       <p>1.0.6 Window path issue and other bug fixes.</p>
+       <p>1.0.5 Bug fixes.</p>
        <p>1.0.4 Bug fixes.</p>
        <p>1.0.3 Fix execution issue on windows.</p>
        <p>1.0.2 Bug fixes.</p>
        <p>1.0.1 First version.</p>
-    ]]>
-    </change-notes>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.lang</depends>
+    <!--<depends>com.intellij.modules.platform</depends>-->
+    <depends>org.jetbrains.plugins.sass</depends>
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
     <idea-version since-build="131"/>
@@ -57,5 +58,4 @@
     <actions>
         <!-- Add your actions here -->
     </actions>
-
 </idea-plugin>

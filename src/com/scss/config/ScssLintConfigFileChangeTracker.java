@@ -34,9 +34,9 @@ public class ScssLintConfigFileChangeTracker {
                 public void run() {
                     ApplicationManager.getApplication().runWriteAction(new Runnable() {
                         public void run() {
-                            VirtualFileManager.getInstance().addVirtualFileListener(new ESLintConfigFileVfsListener(), ScssLintConfigFileChangeTracker.this.project);
+                            VirtualFileManager.getInstance().addVirtualFileListener(new ScssLintConfigFileVfsListener(), ScssLintConfigFileChangeTracker.this.project);
                             EditorEventMulticaster multicaster = EditorFactory.getInstance().getEventMulticaster();
-                            multicaster.addDocumentListener(new ESLintConfigFileDocumentListener(), ScssLintConfigFileChangeTracker.this.project);
+                            multicaster.addDocumentListener(new ScssLintConfigFileDocumentListener(), ScssLintConfigFileChangeTracker.this.project);
                         }
                     });
                 }
@@ -56,8 +56,8 @@ public class ScssLintConfigFileChangeTracker {
         }
     }
 
-    private class ESLintConfigFileDocumentListener extends DocumentAdapter {
-        private ESLintConfigFileDocumentListener() {
+    private class ScssLintConfigFileDocumentListener extends DocumentAdapter {
+        private ScssLintConfigFileDocumentListener() {
         }
 
         public void beforeDocumentChange(DocumentEvent event) {
@@ -71,8 +71,8 @@ public class ScssLintConfigFileChangeTracker {
         }
     }
 
-    private class ESLintConfigFileVfsListener extends VirtualFileAdapter {
-        private ESLintConfigFileVfsListener() {
+    private class ScssLintConfigFileVfsListener extends VirtualFileAdapter {
+        private ScssLintConfigFileVfsListener() {
         }
 
         public void fileCreated(@NotNull VirtualFileEvent event) {

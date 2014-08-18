@@ -25,9 +25,9 @@ public class ScssLintProjectComponent implements ProjectComponent {
     private static final Logger LOG = Logger.getInstance(ScssLintBundle.LOG_ID);
 
     public String scssLintConfigFile;
-    public String rulesPath;
+//    public String rulesPath;
     public String scssLintExecutable;
-    public String nodeInterpreter;
+//    public String nodeInterpreter;
     public boolean treatAsWarnings;
     public boolean pluginEnabled;
 
@@ -95,8 +95,8 @@ public class ScssLintProjectComponent implements ProjectComponent {
 //        }
         scssLintExecutable = settings.scssLintExecutable;
         scssLintConfigFile = settings.scssLintConfigFile;
-        rulesPath = settings.rulesPath;
-        nodeInterpreter = settings.nodeInterpreter;
+//        rulesPath = settings.rulesPath;
+//        nodeInterpreter = settings.nodeInterpreter;
         treatAsWarnings = settings.treatAllIssuesAsWarnings;
         pluginEnabled = settings.pluginEnabled;
     }
@@ -106,15 +106,15 @@ public class ScssLintProjectComponent implements ProjectComponent {
         if (!settings.pluginEnabled) {
             return true;
         }
-        boolean status = validateField("Node Interpreter", settings.nodeInterpreter, true, false, true);
-        if (!status) {
-            return false;
-        }
-        status = validateField("Rules", settings.rulesPath, false, true, false);
-        if (!status) {
-            return false;
-        }
-        status = validateField("SCSS Lint bin", settings.scssLintExecutable, false, false, true);
+//        boolean status = validateField("Node Interpreter", settings.nodeInterpreter, true, false, true);
+//        if (!status) {
+//            return false;
+//        }
+//        status = validateField("Rules", settings.rulesPath, false, true, false);
+//        if (!status) {
+//            return false;
+//        }
+        boolean status = validateField("SCSS Lint bin", settings.scssLintExecutable, false, false, true);
         if (!status) {
             return false;
         }

@@ -1,0 +1,14 @@
+#inherit_from: '../../inherited-config.yml'
+
+exclude: 'app/assets/stylesheets/plugins/**'
+
+linters:
+  BorderZero:
+    enabled: false
+
+  Indentation:
+    exclude:
+      - 'path/to/file.scss'
+      - 'path/to/directory/**'
+    severity: warning
+    width: 2

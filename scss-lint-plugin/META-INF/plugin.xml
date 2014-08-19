@@ -1,0 +1,65 @@
+<idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
+    <id>com.wix.scss.lint</id>
+    <name>scss-lint</name>
+    <version>1.0.7</version>
+    <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
+    <category>HTML/CSS Development</category>
+    <description><![CDATA[
+      SCSS Lint intellij integration.<br>
+      <p>Support displaying SCSS Lint warnings as intellij inspections</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+       <p>1.0.7 Fixed an NPE bug.</p>
+       <p>1.0.6 Window path issue and other bug fixes.</p>
+       <p>1.0.5 Bug fixes.</p>
+       <p>1.0.4 Bug fixes.</p>
+       <p>1.0.3 Fix execution issue on windows.</p>
+       <p>1.0.2 Bug fixes.</p>
+       <p>1.0.1 First version.</p>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.lang</depends>
+    <!--<depends>com.intellij.modules.platform</depends>-->
+    <depends>org.jetbrains.plugins.sass</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+    <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <projectService serviceImplementation="com.scss.settings.Settings"/>
+        <projectConfigurable instance="com.scss.settings.ScssLintSettingsPage"/>
+        <localInspection language="SCSS" groupPath="SASS/SCSS" shortName="ScssLintInspection"
+                         enabledByDefault="true" level="ERROR"
+                         bundle="com.scss.ScssLintBundle"
+                         implementationClass="com.scss.ScssLintInspection"
+                         displayName="SCSS Lint" groupKey="scss.inspection.group.name"/>
+        <!--unfair="true" runForWholeFile="true" level="WARNING" -->
+        <externalAnnotator language="SCSS" implementationClass="com.scss.ScssLintExternalAnnotator" />
+        <!-- -->
+        <projectService serviceImplementation="com.scss.config.ScssLintConfigFileChangeTracker" />
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+        <component>
+            <implementation-class>com.scss.ScssLintProjectComponent</implementation-class>
+        </component>
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>

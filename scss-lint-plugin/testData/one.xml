@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <file name="one.scss">
+        <issue linter="PropertySortOrder" line="5" column="3" length="22" severity="warning"
+               reason="Properties should be sorted in order, with vendor-prefixed extensions before the standardized CSS property"/>
+    </file>
+</lint>

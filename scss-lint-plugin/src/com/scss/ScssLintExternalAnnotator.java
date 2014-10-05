@@ -21,6 +21,8 @@ import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.scss.annotator.BaseActionFix;
+import com.scss.annotator.Fixes;
 import com.scss.config.ScssLintConfigFileChangeTracker;
 import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.Lint;
@@ -97,10 +99,10 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             if (annotation != null) {
                 int offset = StringUtil.lineColToOffset(document.getText(), issue.line - 1, issue.column);
                 PsiElement lit = PsiUtil.getElementAtOffset(file, offset);
-//                BaseActionFix actionFix = Fixes.getFixForRule(issue.rule, lit);
-//                if (actionFix != null) {
-//                    annotation.registerFix(actionFix, null, inspectionKey);
-//                }
+                BaseActionFix actionFix = Fixes.getFixForRule(issue.linter, lit);
+                if (actionFix != null) {
+                    annotation.registerFix(actionFix, null, inspectionKey);
+                }
 //                annotation.registerFix(new SuppressActionFix(issue.rule, lit), null, inspectionKey);
             }
         }

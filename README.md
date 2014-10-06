@@ -3,6 +3,7 @@
 [scss-lint](https://github.com/causes/scss-lint) is a tool to help keep your SCSS files clean and readable. see more [here](https://github.com/causes/scss-lint).<br/>
 SCSS Lint plugin for WebStorm, PHPStorm and other Idea family IDE with Javascript plugin, provides integration with SCSS Lint and shows errors and warnings inside the editor.
 * Support displaying SCSS Lint warnings as intellij inspections
+* Support quick fix for PropertySortRule that sorts the properties
 
 ## Getting started ##
 ### Prerequisites ###

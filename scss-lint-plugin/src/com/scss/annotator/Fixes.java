@@ -7,8 +7,6 @@ public final class Fixes {
     }
 
     public static BaseActionFix getFixForRule(String rule, PsiElement element) {
-//        Map<String, BaseActionFix> map = new HashMap<String, BaseActionFix>();
-//        map.put("strict", )
         if (rule.equals("PropertySortOrder")) {
             return new PropertySortOrderFix(element);
         }

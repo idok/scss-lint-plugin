@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.0.8</version>
+    <version>1.0.10</version>
     <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
@@ -10,6 +10,8 @@
     ]]></description>
 
     <change-notes><![CDATA[
+       <p>1.0.10 Fix PhpStorm compatibility issue</p>
+       <p>1.0.9 Fix webstorm 9 compatibility issue</p>
        <p>1.0.8 Add quick fix to sort properties</p>
        <p>1.0.7 Fixed an NPE bug.</p>
        <p>1.0.6 Window path issue and other bug fixes.</p>

@@ -12,16 +12,7 @@ public final class ScssLintConfigFileUtil {
     }
 
     public static boolean isScssLintConfigFile(PsiFile file) {
-        if (file == null) {
-            return false;
-        }
-        if (isScssLintConfigFile(file.getVirtualFile())) {
-            return true;
-        }
-        if (file.getFileType().equals(ScssLintConfigFileType.INSTANCE)) {
-            return true;
-        }
-        return false;
+        return file != null && (isScssLintConfigFile(file.getVirtualFile()) || file.getFileType().equals(ScssLintConfigFileType.INSTANCE));
     }
 
     public static boolean isScssLintConfigFile(PsiElement position) {

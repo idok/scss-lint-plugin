@@ -1,18 +1,21 @@
 package com.scss.utils;
 
-import com.google.common.base.Charsets;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.*;
+import com.intellij.execution.process.ProcessOutput;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Key;
 import com.scss.utils.scssLint.Lint;
 import com.scss.utils.scssLint.LintResult;
+import com.wix.nodejs.NodeRunner;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Test;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
 
 public final class ScssLintRunner {
     private ScssLintRunner() {
@@ -88,14 +91,27 @@ public final class ScssLintRunner {
             commandLine.addParameter("-c");
             commandLine.addParameter(config);
         }
-        return execute(commandLine, TIME_OUT);
+        return NodeRunner.execute(commandLine, TIME_OUT);
     }
 
     @NotNull
-    public static ProcessOutput version(@NotNull ScssLintSettings settings) throws ExecutionException {
+    private static ProcessOutput version(@NotNull ScssLintSettings settings) throws ExecutionException {
         GeneralCommandLine commandLine = createCommandLine(settings);
         commandLine.addParameter("-v");
-        return execute(commandLine, TIME_OUT);
+        return NodeRunner.execute(commandLine, TIME_OUT);
+    }
+
+    @NotNull
+    public static String runVersion(@NotNull ScssLintSettings settings) throws ExecutionException {
+        if (!new File(settings.scssLintExe).exists()) {
+            LOG.warn("Calling version with invalid scssLintExe exe " + settings.scssLintExe);
+            return "";
+        }
+        ProcessOutput out = version(settings);
+        if (out.getExitCode() == 0) {
+            return out.getStdout().trim();
+        }
+        return "";
     }
 
     @NotNull
@@ -104,33 +120,5 @@ public final class ScssLintRunner {
         commandLine.setWorkDirectory(settings.cwd);
         commandLine.setExePath(settings.scssLintExe);
         return commandLine;
-    }
-
-    @NotNull
-    private static ProcessOutput execute(@NotNull GeneralCommandLine commandLine, int timeoutInMilliseconds) throws ExecutionException {
-        LOG.info("Running scss-lint command: " + commandLine.getCommandLineString());
-        Process process = commandLine.createProcess();
-        OSProcessHandler processHandler = new ColoredProcessHandler(process, commandLine.getCommandLineString(), Charsets.UTF_8);
-        final ProcessOutput output = new ProcessOutput();
-        processHandler.addProcessListener(new ProcessAdapter() {
-            public void onTextAvailable(ProcessEvent event, Key outputType) {
-                if (outputType.equals(ProcessOutputTypes.STDERR)) {
-                    output.appendStderr(event.getText());
-                } else if (!outputType.equals(ProcessOutputTypes.SYSTEM)) {
-                    output.appendStdout(event.getText());
-                }
-            }
-        });
-        processHandler.startNotify();
-        if (processHandler.waitFor(timeoutInMilliseconds)) {
-            output.setExitCode(process.exitValue());
-        } else {
-            processHandler.destroyProcess();
-            output.setTimeout();
-        }
-        if (output.isTimeout()) {
-            throw new ExecutionException("Command '" + commandLine.getCommandLineString() + "' is timed out.");
-        }
-        return output;
     }
 }

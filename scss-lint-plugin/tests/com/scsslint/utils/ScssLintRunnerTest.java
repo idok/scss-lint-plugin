@@ -15,12 +15,12 @@ import static org.junit.Assert.assertEquals;
 
 public class ScssLintRunnerTest {
 
-    public static final String NODE_INTERPRETER = "/usr/local/bin/node";
-    public static final String SCSS_LINT_BIN = "scss-lint";
-    public static final String PLUGIN_ROOT = "/Users/idok/Projects/scss-lint-plugin/scss-lint-plugin";
+    public static final String SCSS_EXE = "/usr/bin/scss-lint";
+    public static final String PLUGIN_ROOT = "/Users/idok/Projects/scss-lint-plugin/scss-lint-plugin/scss-lint-plugin";
+    public static final String CONFIG = "";
 
     private static ScssLintRunner.ScssLintSettings createSettings(String targetFile) {
-        return ScssLintRunner.buildSettings(PLUGIN_ROOT, targetFile, NODE_INTERPRETER, SCSS_LINT_BIN);
+        return ScssLintRunner.buildSettings(PLUGIN_ROOT, targetFile, SCSS_EXE, CONFIG);
     }
 
     private static ScssLintRunner.ScssLintSettings createSettings() {
@@ -29,17 +29,20 @@ public class ScssLintRunnerTest {
 
     @Test
     public void testMultiply() {
-        ScssLintRunner.ScssLintSettings settings = createSettings(PLUGIN_ROOT + "/testData/one.scss");
+        String scssFile = "testData/one.scss";
+//        String scssFile = PLUGIN_ROOT + "/testData/one.scss";
+        ScssLintRunner.ScssLintSettings settings = createSettings(scssFile);
         try {
-            LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_LINT_BIN, null);
-            System.out.println(result.lint.file.name);
-            System.out.println(result.lint.file.issues.size());
-            assertEquals("10 x 5 must be 50", PLUGIN_ROOT + "/testData/one.scss", result.lint.file.name);
+            LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_EXE, CONFIG);
+//            System.out.println(result.lint.file.name);
+//            System.out.println(result.lint.file.issues.size());
+            assertEquals("file name should match", scssFile, result.lint.file.name);
+            assertEquals("should have 1 issue", 1, result.lint.file.issues.size());
+//            assertEquals("should have 1 issue", "1", result.lint.file.issues.get(0).reason);
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }
-
 
     @Test
     public void testMultiply2() {
@@ -47,25 +50,12 @@ public class ScssLintRunnerTest {
         System.out.println(fromPath);
     }
 
-//    public static void main(String[] args) throws ExecutionException {
-//        ESLintSettings settings = new ESLintSettings();
-//        settings.node = "node";
-//        settings.config = "";
-//        settings.eslintExecutablePath = "/usr/local/bin/eslint";
-//        settings.targetFile = "/Users/idok/Projects/eslint-plugin/testData/eq.js";
-//        lint(settings);
-//    }
-
     @Test
     public void testVersion() {
         ScssLintRunner.ScssLintSettings settings = createSettings();
-        ProcessOutput out;
         try {
-            out = ScssLintRunner.version(settings);
-            System.out.println(settings);
-            System.out.println(out.getStdout());
-            assertEquals("exit code should be 0", 0, out.getExitCode());
-            assertEquals("version should be", "v0.7.4", out.getStdout().trim());
+            String version = ScssLintRunner.runVersion(settings);
+            assertEquals("version should be", "scss-lint 0.27.0", version);
         } catch (ExecutionException e) {
             e.printStackTrace();
         }

@@ -27,7 +27,7 @@ public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
         Settings settings = Settings.getInstance(project);
 //        settings.scssLintExecutable = ScssLintRunnerTest.SCSS_LINT_BIN;
 //        settings.scssLintConfigFile = getTestDataPath() + "/.eslintrc";
-//        settings.nodeInterpreter = ScssLintRunnerTest.NODE_INTERPRETER;
+//        settings.nodeInterpreter = ScssLintRunnerTest.SCSS_EXE;
 //        settings.rulesPath = "";
         settings.pluginEnabled = true;
         myFixture.configureByFile(file);

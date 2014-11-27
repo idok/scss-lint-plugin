@@ -155,17 +155,27 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         return annotation;
     }
 
-    @Nullable
-    public static Annotation createAnnotation(@NotNull AnnotationHolder holder, @NotNull HighlightSeverity severity, @Nullable TextAttributes forcedTextAttributes, @NotNull TextRange range, @NotNull String message) {
-        if (forcedTextAttributes != null) {
-            Annotation annotation = holder.createAnnotation(severity, range, message);
-            annotation.setEnforcedTextAttributes(forcedTextAttributes);
-            return annotation;
-        }
+    @NotNull
+    public static Annotation createAnnotation(@NotNull AnnotationHolder holder, @NotNull HighlightSeverity severity, @NotNull TextRange range, @NotNull String message) {
+        /*
+          avoid using
+          holder.createAnnotation(severity, range, message); as it is not supported in PhpStorm: 7.1.3 (PS-133.982)
+          https://github.com/idok/scss-lint-plugin/issues/5
+         */
         if (severity == HighlightSeverity.ERROR) {
             return holder.createErrorAnnotation(range, message);
         }
         return holder.createWarningAnnotation(range, message);
+    }
+
+    @Nullable
+    public static Annotation createAnnotation(@NotNull AnnotationHolder holder, @NotNull HighlightSeverity severity, @Nullable TextAttributes forcedTextAttributes, @NotNull TextRange range, @NotNull String message) {
+        if (forcedTextAttributes != null) {
+            Annotation annotation = createAnnotation(holder, severity, range, message);
+            annotation.setEnforcedTextAttributes(forcedTextAttributes);
+            return annotation;
+        }
+        return createAnnotation(holder, severity, range, message);
     }
 
     private static int calcErrorStartOffsetInDocument(@NotNull Document document, int lineStartOffset, int lineEndOffset, int errorColumn, int tabSize) {
@@ -226,8 +236,6 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
         try {
-            String f = com.wix.Util.f();
-
             PsiFile file = collectedInfo.psiFile;
             if (!isScssFile(file)) return null;
             ScssLintProjectComponent component = file.getProject().getComponent(ScssLintProjectComponent.class);

@@ -33,24 +33,37 @@ public final class PsiUtil {
         return elt;
     }
 
-    public static int calcErrorStartOffsetInDocument(@NotNull Document document, int lineStartOffset, int lineEndOffset, int errorColumn, int tabSize) {
+    public static int calcErrorStartOffsetInDocument(@NotNull Document document, int lineStartOffset, int lineEndOffset, int column, int tabSize) {
         if (tabSize <= 1) {
-            if (errorColumn < 0) {
+            if (column < 0) {
                 return lineStartOffset;
             }
-            if (lineStartOffset + errorColumn <= lineEndOffset) {
-                return lineStartOffset + errorColumn;
+            if (lineStartOffset + column <= lineEndOffset) {
+                return lineStartOffset + column;
             }
             return lineEndOffset;
         }
         CharSequence docText = document.getCharsSequence();
         int offset = lineStartOffset;
         int col = 0;
-        while (offset < lineEndOffset && col < errorColumn) {
+        while (offset < lineEndOffset && col < column) {
             col += docText.charAt(offset) == '\t' ? tabSize : 1;
             offset++;
         }
         return offset;
+    }
+
+    public static int positionToOffset(@NotNull Document document, int line, int column, int tabSize) {
+        int errorLine = line - 1;
+        int errorColumn = column /*- 1*/;
+
+        if (errorLine < 0 || errorLine >= document.getLineCount()) {
+            return -1;
+        }
+        int lineEndOffset = document.getLineEndOffset(errorLine);
+        int lineStartOffset = document.getLineStartOffset(errorLine);
+
+        return calcErrorStartOffsetInDocument(document, lineStartOffset, lineEndOffset, errorColumn, tabSize);
     }
 
 //    @Nullable

@@ -6,6 +6,8 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualFileImpl;
 import com.intellij.util.Function;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
@@ -27,7 +29,7 @@ public final class FileUtils {
 
     private static final Logger LOG = Logger.getInstance(Util.LOG_ID);
 
-    // WildcardFileNameMatcher w = new WildcardFileNameMatcher("**/.eslintrc");
+    // WildcardFileNameMatcher w = new WildcardFileNameMatcher("**/.jscsrc");
 
     public static String makeRelative(VirtualFile root, VirtualFile absolutePath) {
         //FileUtil.getRelativePath(path, file.getPath().replace('/', File.separatorChar), File.separatorChar)
@@ -229,5 +231,31 @@ public final class FileUtils {
     //
     public enum ValidationStatus {
         VALID, IS_EMPTY, DOES_NOT_EXIST, NOT_A_DIRECTORY, NOT_A_FILE
+    }
+
+    public static boolean fileExists(String path) {
+        File file = new File(path);
+        return file.isFile() && file.exists();
+    }
+
+    public static List<String> getAllFilesInDirectory(VirtualFile directory, String target, String replacement) {
+        List<String> files = new ArrayList<String>();
+        VirtualFile[] children = directory.getChildren();
+        for (VirtualFile child : children) {
+            if (child instanceof VirtualDirectoryImpl) {
+                files.addAll(getAllFilesInDirectory(child, target, replacement));
+            } else if (child instanceof VirtualFileImpl) {
+                files.add(child.getPath().replace(target, replacement));
+            }
+        }
+        return files;
+    }
+
+    public static VirtualFile findFileByPath(VirtualFile path, String valuePath) {
+        VirtualFile file = path.findFileByRelativePath(valuePath);
+        if (null == file || file.isDirectory()) {
+            file = path.findFileByRelativePath(valuePath + ".js");
+        }
+        return file;
     }
 }

@@ -64,7 +64,7 @@ public class ThreadLocalActualFile extends ThreadLocal<String> {
 
     @Nullable
     private File createFile() {
-//        File retFile = new File(file.getParent().getPath(), file.getNameWithoutExtension() + "_eslint_tmp." + file.getExtension());
+//        File retFile = new File(file.getParent().getPath(), file.getNameWithoutExtension() + "_jscs_tmp." + file.getExtension());
         File retFile;
         try {
             // try to create a temp file next to original file

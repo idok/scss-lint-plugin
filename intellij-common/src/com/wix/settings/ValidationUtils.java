@@ -9,7 +9,10 @@ import java.io.File;
 /**
  * Created by idok on 11/27/14.
  */
-public class ValidationUtils {
+public final class ValidationUtils {
+
+    private ValidationUtils() {
+    }
 
     public static boolean validatePath(Project project, String path, boolean allowEmpty) {
         if (StringUtils.isEmpty(path)) {

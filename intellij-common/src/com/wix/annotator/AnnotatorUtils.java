@@ -13,7 +13,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Created by idok on 8/19/14.
  */
-public class AnnotatorUtils {
+public final class AnnotatorUtils {
+    private AnnotatorUtils() {
+    }
+
     @NotNull
     public static TextAttributes getTextAttributes(@Nullable EditorColorsScheme editorColorsScheme, @NotNull SeverityRegistrar severityRegistrar, @NotNull HighlightSeverity severity) {
         TextAttributes textAttributes = severityRegistrar.getTextAttributesBySeverity(severity);

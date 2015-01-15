@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualFileImpl;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.Function;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
@@ -39,6 +40,18 @@ public final class FileUtils {
     public static String makeRelative(Project project, VirtualFile absolutePath) {
         //FileUtil.getRelativePath(path, file.getPath().replace('/', File.separatorChar), File.separatorChar)
         return makeRelative(project.getBaseDir(), absolutePath);
+    }
+
+    public static String relativePath(String root, String path) {
+        return FileUtil.getRelativePath(new File(root), new File(path));
+    }
+
+    public static String relativePath(Project project, VirtualFile absolutePath) {
+        return FileUtil.getRelativePath(new File(project.getBasePath()), new File(absolutePath.getPath()));
+    }
+
+    public static String relativePath(PsiFile file) {
+        return FileUtil.getRelativePath(new File(file.getProject().getBasePath()), new File(file.getVirtualFile().getPath()));
     }
 
     public static String getExtensionWithDot(VirtualFile file){
@@ -234,6 +247,9 @@ public final class FileUtils {
     }
 
     public static boolean fileExists(String path) {
+        if (StringUtils.isEmpty(path)) {
+            return false;
+        }
         File file = new File(path);
         return file.isFile() && file.exists();
     }

@@ -24,6 +24,10 @@ public final class ScssLintRunner {
     private static final Logger LOG = Logger.getInstance(ScssLintRunner.class);
 
     private static final int TIME_OUT = (int) TimeUnit.SECONDS.toMillis(120L);
+    /**
+     * One or more files specified were not found
+     */
+    private static final int FILES_NOT_FOUND = 66;
 
     public static class ScssLintSettings {
         public ScssLintSettings() {
@@ -59,7 +63,9 @@ public final class ScssLintRunner {
 //        } else {
             result.errorOutput = out.getStderr();
             try {
-                result.lint = Lint.read(out.getStdout());
+                if (out.getExitCode() != FILES_NOT_FOUND) {
+                    result.lint = Lint.read(out.getStdout());
+                }
             } catch (Exception e) {
                 result.errorOutput = out.getStdout();
             }

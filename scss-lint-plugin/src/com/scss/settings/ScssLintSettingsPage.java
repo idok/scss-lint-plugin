@@ -181,7 +181,7 @@ public class ScssLintSettingsPage implements Configurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "SCSS Lint Plugin";
+        return "SCSS Lint";
     }
 
     @Nullable

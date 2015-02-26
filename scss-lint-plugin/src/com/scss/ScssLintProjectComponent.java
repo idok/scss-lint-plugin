@@ -29,7 +29,7 @@ public class ScssLintProjectComponent implements ProjectComponent {
     public boolean treatAsWarnings;
     public boolean pluginEnabled;
 
-    public static final String PLUGIN_NAME = "SCSS Lint Plugin";
+    public static final String PLUGIN_NAME = "SCSS Lint";
 
     public ScssLintProjectComponent(Project project) {
         this.project = project;

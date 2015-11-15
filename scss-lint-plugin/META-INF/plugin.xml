@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.0.10</version>
+    <version>1.0.15</version>
     <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
@@ -10,8 +10,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+       <p>1.0.15 Bug fixes</p>
+       <p>1.0.14 Bug fixes</p>
+       <p>1.0.13 Fix compatibility issue with scss-lint 0.39.0</p>
+       <p>1.0.12 Bug fixes</p>
+       <p>1.0.11 Remove YAML dependency</p>
        <p>1.0.10 Fix PhpStorm compatibility issue</p>
-       <p>1.0.9 Fix webstorm 9 compatibility issue</p>
+       <p>1.0.9 Fix WebStorm 9 compatibility issue</p>
        <p>1.0.8 Add quick fix to sort properties</p>
        <p>1.0.7 Fixed an NPE bug.</p>
        <p>1.0.6 Window path issue and other bug fixes.</p>
@@ -25,7 +30,9 @@
     <depends>com.intellij.modules.lang</depends>
     <!--<depends>com.intellij.modules.platform</depends>-->
     <depends>org.jetbrains.plugins.sass</depends>
-    <depends>org.jetbrains.plugins.yaml</depends>
+    <!--<depends>org.jetbrains.plugins.yaml</depends>-->
+
+    <!--<depends optional="true" config-file="scss-config.xml">org.jetbrains.plugins.yaml</depends>-->
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
     <idea-version since-build="131"/>

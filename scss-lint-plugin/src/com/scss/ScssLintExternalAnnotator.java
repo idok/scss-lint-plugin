@@ -13,6 +13,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -24,10 +25,12 @@ import com.intellij.psi.PsiFile;
 import com.scss.annotator.BaseActionFix;
 import com.scss.annotator.Fixes;
 import com.scss.config.ScssLintConfigFileChangeTracker;
+import com.scss.settings.ScssLintSettingsPage;
 import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.Lint;
 import com.scss.utils.scssLint.LintResult;
 import com.wix.ActualFile;
+import com.wix.ThreadLocalActualFile;
 import com.wix.annotator.AnnotatorUtils;
 import com.wix.utils.FileUtils;
 import com.wix.utils.PsiUtil;
@@ -47,6 +50,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
 
     public static final ScssLintExternalAnnotator INSTANCE = new ScssLintExternalAnnotator();
     private static final Logger LOG = Logger.getInstance(ScssLintBundle.LOG_ID);
+    private static final Key<ThreadLocalActualFile> SCSS_TEMP_FILE_KEY = Key.create("SCSS_TEMP_FILE");
 
     @Nullable
     @Override
@@ -85,11 +89,22 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             return;
         }
 
-        // TODO consider adding a fix to edit configuration file
-        if (annotationResult.result.lint.file == null) {
+        if (annotationResult.fileLevel != null) {
+            Annotation annotation = holder.createWarningAnnotation(file, annotationResult.fileLevel);
+            annotation.registerFix(new EditSettingsAction(new ScssLintSettingsPage(file.getProject())));
+            annotation.setFileLevelAnnotation(true);
             return;
         }
-        List<Lint.Issue> issues = annotationResult.result.lint.file.issues;
+
+        // TODO consider adding a fix to edit configuration file
+        if (annotationResult.result == null || annotationResult.result.lint == null || annotationResult.result.lint.isEmpty()) {
+            return;
+        }
+        String relativeFile = FileUtils.makeRelative(file.getProject(), file.getVirtualFile());
+        List<Lint.Issue> issues = annotationResult.result.lint.get(relativeFile);
+        if (issues == null) {
+            return;
+        }
         ScssLintProjectComponent component = annotationResult.input.project.getComponent(ScssLintProjectComponent.class);
         int tabSize = 4;
         for (Lint.Issue issue : issues) {
@@ -148,7 +163,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         }
         range = new TextRange(errorLineStartOffset, errorLineStartOffset + issue.length);
 
-        Annotation annotation = createAnnotation(holder, severity, forcedTextAttributes, range, messagePrefix + issue.reason.trim() + " (" + issue.linter + ')');
+        Annotation annotation = createAnnotation(holder, severity, forcedTextAttributes, range, messagePrefix + issue.reason.trim() + " (" + (issue.linter == null ? "none" : issue.linter) + ')');
         if (annotation != null) {
             annotation.setAfterEndOfLine(errorLineStartOffset == lineEndOffset);
         }
@@ -211,10 +226,10 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             return null;
         }
         Project project = psiFile.getProject();
-        ScssLintProjectComponent component = project.getComponent(ScssLintProjectComponent.class);
-        if (!component.isSettingsValid() || !component.isEnabled()) {
-            return null;
-        }
+//        ScssLintProjectComponent component = project.getComponent(ScssLintProjectComponent.class);
+//        if (!component.isSettingsValid() || !component.isEnabled()) {
+//            return new ScssLintAnnotationInput(project, psiFile, null, null, "Invalid settings!");
+//        }
         Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
         if (document == null) {
             return null;
@@ -235,23 +250,26 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
+        ActualFile actualCodeFile = null;
         try {
             PsiFile file = collectedInfo.psiFile;
             if (!isScssFile(file)) return null;
             ScssLintProjectComponent component = file.getProject().getComponent(ScssLintProjectComponent.class);
-            if (!component.isSettingsValid() || !component.isEnabled()) {
-                return null;
+            if (!component.isEnabled()) {
+                return new ScssLintAnnotationResult(collectedInfo, null, "SCSS Lint is available for this file but is not configured");
+            }
+            if (!component.isSettingsValid()) {
+                return new ScssLintAnnotationResult(collectedInfo, null, "SCSS Lint is not configured correctly");
             }
 
             ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
             String relativeFile;
-            ActualFile actualCodeFile = ActualFile.getOrCreateActualFile(file.getVirtualFile(), collectedInfo.fileContent);
+            actualCodeFile = ActualFile.getOrCreateActualFile(SCSS_TEMP_FILE_KEY, file.getVirtualFile(), collectedInfo.fileContent);
             if (actualCodeFile == null || actualCodeFile.getFile() == null) {
                 return null;
             }
-            relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.getFile());
+            relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.getActualFile());
             LintResult result = ScssLintRunner.runLint(file.getProject().getBasePath(), relativeFile, component.scssLintExecutable, component.scssLintConfigFile);
-            actualCodeFile.deleteTemp();
 
             if (StringUtils.isNotEmpty(result.errorOutput)) {
                 component.showInfoNotification(result.errorOutput, NotificationType.WARNING);
@@ -260,13 +278,17 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             Document document = PsiDocumentManager.getInstance(file.getProject()).getDocument(file);
             if (document == null) {
                 component.showInfoNotification("Error running SCSS Lint inspection: Could not get document for file " + file.getName(), NotificationType.WARNING);
-                System.out.println("Could not get document for file " + file.getName());
+                LOG.warn("Could not get document for file " + file.getName());
                 return null;
             }
             return new ScssLintAnnotationResult(collectedInfo, result);
         } catch (Exception e) {
             LOG.error("Error running ScssLint inspection: ", e);
             ScssLintProjectComponent.showNotification("Error running SCSS Lint inspection: " + e.getMessage(), NotificationType.ERROR);
+        } finally {
+            if (actualCodeFile != null) {
+                actualCodeFile.deleteTemp();
+            }
         }
         return null;
     }
@@ -292,6 +314,13 @@ class ScssLintAnnotationResult {
         this.result = result;
     }
 
+    public ScssLintAnnotationResult(ScssLintAnnotationInput input, LintResult result, String fileLevel) {
+        this.input = input;
+        this.result = result;
+        this.fileLevel = fileLevel;
+    }
+
     public final ScssLintAnnotationInput input;
     public final LintResult result;
+    public String fileLevel;
 }

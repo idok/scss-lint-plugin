@@ -24,6 +24,9 @@ public final class ValidationUtils {
                 return false;
             }
         } else {
+            if (project == null || project.getBaseDir() == null) {
+                return true;
+            }
             VirtualFile child = project.getBaseDir().findFileByRelativePath(path);
             if (child == null || !child.exists() || child.isDirectory()) {
                 return false;

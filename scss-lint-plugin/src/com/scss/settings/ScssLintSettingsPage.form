@@ -27,7 +27,7 @@
             </constraints>
             <properties>
               <selected value="true"/>
-              <text value="Let scss-lint &amp;search for config up the folder tree"/>
+              <text value="Let scss-lint &amp;search for config in current directory or user home"/>
             </properties>
           </component>
           <component id="36405" class="javax.swing.JRadioButton" binding="useProjectConfigRadioButton">

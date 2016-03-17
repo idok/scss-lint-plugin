@@ -2,9 +2,10 @@ package com.scsslint;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.scss.ScssLintExternalAnnotator;
 import com.scss.ScssLintInspection;
 import com.scss.settings.Settings;
-import org.jetbrains.plugins.scss.SCSSFileType;
+//import org.jetbrains.plugins.scss.SCSSFileType;
 
 public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
@@ -37,7 +38,7 @@ public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
 
     protected void doTest() {
         String name = getTestName(false).replaceAll("_", "-");
-        doTest("/inspections/" + name + "." + SCSSFileType.DEFAULT_EXTENSION);
+        doTest("/inspections/" + name + "." + ScssLintExternalAnnotator.SCSS);
     }
 
     public void testCapitalizationInSelector() {

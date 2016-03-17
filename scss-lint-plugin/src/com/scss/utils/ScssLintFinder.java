@@ -1,10 +1,9 @@
 package com.scss.utils;
 
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil;
-import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
-import com.scss.config.ScssLintConfigFileType;
+import com.wix.nodejs.NodeFinder;
 import com.wix.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 public final class ScssLintFinder {
-    public static final String SCSS_LINT_BASE_NAME = SystemInfo.isWindows ? "scss-lint.bat" : "scss-lint";
+    public static final String SCSS_LINT_BASE_NAME = NodeFinder.getBinName("scss-lint");
+    public static final String SCSS_LINT_YML = "scss-lint.yml";
 
     private ScssLintFinder() {
     }
@@ -37,7 +37,7 @@ public final class ScssLintFinder {
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File file, String name) {
-                return name.equals(ScssLintConfigFileType.SCSS_LINT_YML);
+                return name.equals(SCSS_LINT_YML);
             }
         };
         List<String> files = FileUtils.recursiveVisitor(projectRoot, filter);

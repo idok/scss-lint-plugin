@@ -1,9 +1,12 @@
 package com.scss.utils.scssLint;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by idok on 8/11/14.
  */
 public class LintResult {
-    public Lint lint;
+    public Map<String, List<Lint.Issue>> lint;
     public String errorOutput;
 }

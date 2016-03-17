@@ -18,35 +18,35 @@ import org.jetbrains.annotations.NotNull;
 
 public class EditSettingsAction implements IntentionAction, Iconable, HighPriorityAction {
     private static boolean ourInvoked = false;
-    private final ScssLintSettingsPage myLinterConfigurable;
-    private final boolean myForFileLevelAnnotation;
-    private final Icon myIcon;
+    private final boolean fileLevelAnnotation;
+    private final Icon icon;
+    private final ScssLintSettingsPage configurable;
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage linterConfigurable) {
-        this(linterConfigurable, false, General.Settings);
+    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable) {
+        this(configurable, false, General.Settings);
     }
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage linterConfigurable, @NotNull Icon icon) {
-        this(linterConfigurable, false, icon);
+    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable, @NotNull Icon icon) {
+        this(configurable, false, icon);
     }
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable, boolean forFileLevelAnnotation) {
-        this(configurable, forFileLevelAnnotation, General.Settings);
+    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable, boolean fileLevelAnnotation) {
+        this(configurable, fileLevelAnnotation, General.Settings);
     }
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage linterConfigurable, boolean forFileLevelAnnotation, @NotNull Icon icon) {
-        this.myLinterConfigurable = linterConfigurable;
-        this.myForFileLevelAnnotation = forFileLevelAnnotation;
-        this.myIcon = icon;
+    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable, boolean fileLevelAnnotation, @NotNull Icon icon) {
+        this.configurable = configurable;
+        this.fileLevelAnnotation = fileLevelAnnotation;
+        this.icon = icon;
     }
 
     public Icon getIcon(@IconFlags int flags) {
-        return this.myIcon;
+        return this.icon;
     }
 
     @NotNull
     public String getText() {
-        return this.myForFileLevelAnnotation ? "Settings..." : this.myLinterConfigurable.getDisplayName() + " settings...";
+        return this.fileLevelAnnotation ? "Settings..." : this.configurable.getDisplayName() + " settings...";
     }
 
     @NotNull
@@ -64,11 +64,10 @@ public class EditSettingsAction implements IntentionAction, Iconable, HighPriori
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
                     EditSettingsAction.ourInvoked = false;
-                    EditSettingsAction.this.myLinterConfigurable.showSettings();
+                    EditSettingsAction.this.configurable.showSettings();
                 }
             }, ModalityState.any());
         }
-
     }
 
     public boolean startInWriteAction() {

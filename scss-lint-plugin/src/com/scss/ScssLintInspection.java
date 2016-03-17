@@ -1,16 +1,13 @@
 package com.scss;
 
-import com.scss.settings.ScssLintSettingsPage;
 import com.google.common.base.Joiner;
 import com.intellij.codeInspection.*;
 import com.intellij.codeInspection.ex.UnfairLocalInspectionTool;
 import com.intellij.ide.DataManager;
-import com.intellij.ide.actions.ShowSettingsUtilImpl;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ex.SingleConfigurableEditor;
 import com.intellij.openapi.options.newEditor.OptionsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -21,14 +18,16 @@ import com.intellij.ui.HyperlinkAdapter;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.util.containers.ContainerUtil;
+import com.scss.settings.ScssLintSettingsPage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.plugins.sass.SASSBundle;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.util.List;
+
+//import org.jetbrains.plugins.sass.SASSBundle;
 
 public class ScssLintInspection extends LocalInspectionTool implements BatchSuppressableTool, UnfairLocalInspectionTool { //extends PropertySuppressableInspectionBase {
 
@@ -74,7 +73,7 @@ public class ScssLintInspection extends LocalInspectionTool implements BatchSupp
     @NotNull
     private HyperlinkLabel createHyperLink() {
 //        List path = ContainerUtil.newArrayList(JSBundle.message("settings.javascript.root.configurable.name"), JSBundle.message("settings.javascript.linters.configurable.name"), getDisplayName());
-        List<String> path = ContainerUtil.newArrayList(SASSBundle.message("inspections.group.name"), ScssLintBundle.message("scss.inspection.group.name"), getDisplayName());
+        List<String> path = ContainerUtil.newArrayList(ScssLintBundle.message("scss.inspections.group.name"), ScssLintBundle.message("scss.inspection.group.name"), getDisplayName());
         String title = Joiner.on(" / ").join(path);
         final HyperlinkLabel settingsLink = new HyperlinkLabel(title);
         settingsLink.addHyperlinkListener(new HyperlinkAdapter() {
@@ -99,9 +98,10 @@ public class ScssLintInspection extends LocalInspectionTool implements BatchSupp
 
     public static void showSettings(Project project) {
         ScssLintSettingsPage configurable = new ScssLintSettingsPage(project);
-        String dimensionKey = ShowSettingsUtilImpl.createDimensionKey(configurable);
-        SingleConfigurableEditor singleConfigurableEditor = new SingleConfigurableEditor(project, configurable, dimensionKey, false);
-        singleConfigurableEditor.show();
+        configurable.showSettings();
+//        String dimensionKey = ShowSettingsUtilImpl.createDimensionKey(configurable);
+//        SingleConfigurableEditor singleConfigurableEditor = new SingleConfigurableEditor(project, configurable, dimensionKey, false);
+//        singleConfigurableEditor.show();
     }
 
     @Override

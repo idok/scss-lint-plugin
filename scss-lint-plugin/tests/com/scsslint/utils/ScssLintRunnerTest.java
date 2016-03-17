@@ -2,7 +2,6 @@ package com.scsslint.utils;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil;
-import com.intellij.execution.process.ProcessOutput;
 import com.scss.utils.ScssLintFinder;
 import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.LintResult;
@@ -36,8 +35,10 @@ public class ScssLintRunnerTest {
             LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_EXE, CONFIG);
 //            System.out.println(result.lint.file.name);
 //            System.out.println(result.lint.file.issues.size());
-            assertEquals("file name should match", scssFile, result.lint.file.name);
-            assertEquals("should have 1 issue", 1, result.lint.file.issues.size());
+
+
+//            assertEquals("file name should match", scssFile, result.lint.get(scssFile));
+            assertEquals("should have 1 issue", 1, result.lint.get(scssFile).size());
 //            assertEquals("should have 1 issue", "1", result.lint.file.issues.get(0).reason);
         } catch (ExecutionException e) {
             e.printStackTrace();

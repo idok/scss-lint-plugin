@@ -10,12 +10,9 @@ import com.wix.nodejs.NodeRunner;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Test;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
 
 public final class ScssLintRunner {
     private ScssLintRunner() {
@@ -64,7 +61,7 @@ public final class ScssLintRunner {
             result.errorOutput = out.getStderr();
             try {
                 if (out.getExitCode() != FILES_NOT_FOUND) {
-                    result.lint = Lint.read(out.getStdout());
+                    result.lint = Lint.parse(out.getStdout());
                 }
             } catch (Exception e) {
                 result.errorOutput = out.getStdout();
@@ -92,7 +89,8 @@ public final class ScssLintRunner {
 //        GeneralCommandLine commandLine = createCommandLine(buildSettings(cwd, file, scssLintExe, config));
         commandLine.addParameter(file);
         commandLine.addParameter("-f");
-        commandLine.addParameter("XML");
+        commandLine.addParameter("JSON");
+//        commandLine.addParameter("XML");
         if (StringUtils.isNotEmpty(config)) {
             commandLine.addParameter("-c");
             commandLine.addParameter(config);

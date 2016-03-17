@@ -30,15 +30,17 @@ import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.Lint;
 import com.scss.utils.scssLint.LintResult;
 import com.wix.ActualFile;
+import com.wix.ActualFile2;
 import com.wix.ThreadLocalActualFile;
+import com.wix.ThreadLocalTempActualFile;
 import com.wix.annotator.AnnotatorUtils;
 import com.wix.utils.FileUtils;
 import com.wix.utils.PsiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.plugins.scss.SCSSFileType;
-import org.jetbrains.plugins.scss.psi.SCSSFile;
+//import org.jetbrains.plugins.scss.SCSSFileType;
+//import org.jetbrains.plugins.scss.psi.SCSSFile;
 
 import java.io.File;
 import java.util.List;
@@ -51,6 +53,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     public static final ScssLintExternalAnnotator INSTANCE = new ScssLintExternalAnnotator();
     private static final Logger LOG = Logger.getInstance(ScssLintBundle.LOG_ID);
     private static final Key<ThreadLocalActualFile> SCSS_TEMP_FILE_KEY = Key.create("SCSS_TEMP_FILE");
+    public static final String SCSS = "scss";
 
     @Nullable
     @Override
@@ -144,7 +147,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         int lineEndOffset = document.getLineEndOffset(errorLine);
         int lineStartOffset = document.getLineStartOffset(errorLine);
 
-        int errorLineStartOffset = calcErrorStartOffsetInDocument(document, lineStartOffset, lineEndOffset, errorColumn, tabSize);
+        int errorLineStartOffset = PsiUtil.calcErrorStartOffsetInDocument(document, lineStartOffset, lineEndOffset, errorColumn, tabSize);
 
         if (errorLineStartOffset == -1) {
             return null;
@@ -193,26 +196,6 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         return createAnnotation(holder, severity, range, message);
     }
 
-    private static int calcErrorStartOffsetInDocument(@NotNull Document document, int lineStartOffset, int lineEndOffset, int errorColumn, int tabSize) {
-        if (tabSize <= 1) {
-            if (errorColumn < 0) {
-                return lineStartOffset;
-            }
-            if (lineStartOffset + errorColumn <= lineEndOffset) {
-                return lineStartOffset + errorColumn;
-            }
-            return lineEndOffset;
-        }
-        CharSequence docText = document.getCharsSequence();
-        int offset = lineStartOffset;
-        int col = 0;
-        while (offset < lineEndOffset && col < errorColumn) {
-            col += docText.charAt(offset) == '\t' ? tabSize : 1;
-            offset++;
-        }
-        return offset;
-    }
-
     @Nullable
     private static ScssLintAnnotationInput collectInformation(@NotNull PsiFile psiFile, @Nullable Editor editor) {
         if (psiFile.getContext() != null || !isScssFile(psiFile)) {
@@ -238,19 +221,21 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         if (StringUtil.isEmptyOrSpaces(fileContent)) {
             return null;
         }
-        EditorColorsScheme colorsScheme = editor != null ? editor.getColorsScheme() : null;
+        EditorColorsScheme colorsScheme = editor == null ? null : editor.getColorsScheme();
         return new ScssLintAnnotationInput(project, psiFile, fileContent, colorsScheme);
     }
 
     private static boolean isScssFile(PsiFile file) {
-//        return file.getVirtualFile().getExtension().equals(SCSSFileType.DEFAULT_EXTENSION);
-        return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
+        return file.getVirtualFile().getExtension().equals(SCSS);
+//        return file instanceof SCSSFile && file.getFileType().equals(SCSSFileType.SCSS);
     }
+
+    private static final Key<ThreadLocalTempActualFile> TEMP_FILE = Key.create("SCSS_LINT_TEMP_FILE");
 
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
-        ActualFile actualCodeFile = null;
+        ActualFile2 actualCodeFile = null;
         try {
             PsiFile file = collectedInfo.psiFile;
             if (!isScssFile(file)) return null;
@@ -264,8 +249,8 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
 
             ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
             String relativeFile;
-            actualCodeFile = ActualFile.getOrCreateActualFile(SCSS_TEMP_FILE_KEY, file.getVirtualFile(), collectedInfo.fileContent);
-            if (actualCodeFile == null || actualCodeFile.getFile() == null) {
+            actualCodeFile = ActualFile2.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
+            if (actualCodeFile == null) {
                 return null;
             }
             relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.getActualFile());

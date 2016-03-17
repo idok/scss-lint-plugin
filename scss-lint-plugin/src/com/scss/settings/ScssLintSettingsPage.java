@@ -1,25 +1,26 @@
 package com.scss.settings;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.ide.actions.ShowSettingsUtilImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.ex.SingleConfigurableEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.TextFieldWithHistory;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
 import com.intellij.util.NotNullProducer;
+import com.intellij.util.ui.SwingHelper;
 import com.intellij.util.ui.UIUtil;
-import com.intellij.webcore.ui.SwingHelper;
 import com.scss.ScssLintProjectComponent;
 import com.scss.utils.ScssLintFinder;
 import com.scss.utils.ScssLintRunner;
-import com.wix.settings.ValidationInfo;
 import com.wix.settings.ValidationUtils;
+import com.wix.settings.Validator;
 import com.wix.ui.PackagesNotificationPanel;
 import com.wix.utils.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +34,6 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ScssLintSettingsPage implements Configurable {
@@ -109,19 +109,17 @@ public class ScssLintSettingsPage implements Configurable {
     }
 
     private void validate() {
-        List<ValidationInfo> errors = new ArrayList<ValidationInfo>();
+        Validator validator = new Validator();
         if (!ValidationUtils.validatePath(project, scssLintExeField.getChildComponent().getText(), false)) {
-            ValidationInfo error = new ValidationInfo(scssLintExeField.getChildComponent().getTextEditor(), "Path to scss lint exe is invalid {{LINK}}", FIX_IT);
-            errors.add(error);
+            validator.add(scssLintExeField.getChildComponent().getTextEditor(), "Path to Scss Lint exe is invalid {{LINK}}", FIX_IT);
         }
         if (!ValidationUtils.validatePath(project, scssLintConfigFile.getChildComponent().getText(), true)) {
-            ValidationInfo error = new ValidationInfo(scssLintConfigFile.getChildComponent().getTextEditor(), "Path to scss-lint config is invalid {{LINK}}", FIX_IT); //Please correct path to
-            errors.add(error);
+            validator.add(scssLintConfigFile.getChildComponent().getTextEditor(), "Path to Scss Lint config is invalid {{LINK}}", FIX_IT); //Please correct path to
         }
-        if (errors.isEmpty()) {
+        if (validator.hasErrors()) {
             getVersion();
         }
-        packagesNotificationPanel.processErrors(errors);
+        packagesNotificationPanel.processErrors(validator);
     }
 
     private ScssLintRunner.ScssLintSettings settings;
@@ -159,7 +157,7 @@ public class ScssLintSettingsPage implements Configurable {
             }
         });
 
-        SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintExeField, "Select SCSS Lint exe", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+        SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintExeField, "Select SCSS Lint Exe", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
     }
 
     private void configScssLintConfigField() {
@@ -175,7 +173,7 @@ public class ScssLintSettingsPage implements Configurable {
             }
         });
 
-        SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintConfigFile, "Select SCSS Lint config", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
+        SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintConfigFile, "Select SCSS Lint Config", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());
     }
 
     @Nls
@@ -253,5 +251,11 @@ public class ScssLintSettingsPage implements Configurable {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         usageLink = SwingHelper.createWebHyperlink(HOW_TO_USE_SCSSLINT, HOW_TO_USE_LINK);
+    }
+
+    public void showSettings() {
+        String dimensionKey = ShowSettingsUtilImpl.createDimensionKey(this);
+        SingleConfigurableEditor singleConfigurableEditor = new SingleConfigurableEditor(project, this, dimensionKey, false);
+        singleConfigurableEditor.show();
     }
 }

@@ -1,22 +1,21 @@
 package com.scss.annotator;
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.intention.HighPriorityAction;
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author idok
  */
-public abstract class BaseActionFix implements IntentionAction, HighPriorityAction {
-    protected final PsiElement element;
+public abstract class BaseActionFix extends LocalQuickFixAndIntentionActionOnPsiElement implements IntentionAction, HighPriorityAction {
     public BaseActionFix(PsiElement element) {
-        this.element = element;
+        super(element);
     }
 
     @NotNull
@@ -25,17 +24,10 @@ public abstract class BaseActionFix implements IntentionAction, HighPriorityActi
         return getText();
     }
 
-    @Override
-    public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return true;
-    }
+    protected abstract void fix(@NotNull Project project, Editor editor, PsiFile file, PsiElement start);
 
-    protected abstract void fix(@NotNull Project project, Editor editor, PsiFile file);
-
-    @Override
-    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        fix(project, editor, file);
-        DaemonCodeAnalyzer.getInstance(project).restart(file);
+    public void invoke(@NotNull Project project, @NotNull PsiFile file, @Nullable("is null when called from inspection") Editor editor, @NotNull PsiElement start, @NotNull PsiElement end) {
+        fix(project, editor, file, start);
     }
 
     @Override

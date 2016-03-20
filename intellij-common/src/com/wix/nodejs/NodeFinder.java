@@ -16,10 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class NodeFinder {
-    public static final String RT_BASE_NAME = SystemInfo.isWindows ? "rt.cmd" : "rt";
+//    public static final String RT_BASE_NAME = SystemInfo.isWindows ? "rt.cmd" : "rt";
     private static final Pattern NVM_NODE_DIR_NAME_PATTERN = Pattern.compile("^v?(\\d+)\\.(\\d+)\\.(\\d+)$");
     public static final String NODE_MODULES = "node_modules";
-    public static final String DEFAULT_RT_BIN = SystemInfo.isWindows ? "node_modules\\.bin\\rt.cmd" : "node_modules/react-templates/bin/rt.js";
 
     // TODO figure out a way to automatically get this path or add it to config
     // should read from /usr/local/lib/node_modules/eslint/lib/rules
@@ -29,16 +28,20 @@ public final class NodeFinder {
     private NodeFinder() {
     }
 
+    public static String getBinName(String baseBinName) {
+        return SystemInfo.isWindows ? baseBinName + ".cmd" : baseBinName;
+    }
+
     // List infos = ContainerUtil.newArrayList();
     // NodeModuleSearchUtil.findModulesWithName(infos, "eslint", project.getBaseDir(), null, false);
 
-    @Nullable
-    public static File findInterpreterInPath() {
-        return PathEnvironmentVariableUtil.findInPath(RT_BASE_NAME);
-    }
+//    @Nullable
+//    public static File findInterpreterInPath() {
+//        return PathEnvironmentVariableUtil.findInPath(RT_BASE_NAME);
+//    }
 
     @NotNull
-    public static List<File> listPossibleRTExe(String exeFileName) {
+    public static List<File> searchNodeModulesBin(String exeFileName) {
         Set<File> interpreters = ContainerUtil.newLinkedHashSet();
         List<File> fromPath = PathEnvironmentVariableUtil.findAllExeFilesInPath(exeFileName);
         List<File> nvmInterpreters = listNodeInterpretersFromNvm(exeFileName);
@@ -51,11 +54,35 @@ public final class NodeFinder {
         return ContainerUtil.newArrayList(interpreters);
     }
 
+    @NotNull
+    public static List<File> searchAllScopesForBin(File projectRoot, String exeFileName) {
+//        List<File> nodeModules = searchProjectNodeModules(projectRoot);
+        List<File> globalJscsBin = searchNodeModulesBin(exeFileName);
+        File file = resolvePath(projectRoot, NODE_MODULES, ".bin", exeFileName);
+        if (file.exists()) {
+            globalJscsBin.add(file);
+        }
+
+//        if (SystemInfo.isWindows) {
+//            File file = resolvePath(projectRoot, NODE_MODULES, ".bin", exeFileName);
+//            if (file.exists()) {
+//                globalJscsBin.add(file);
+//            }
+//        } else {
+//            File file = resolvePath(projectRoot, NODE_MODULES, ".bin", exeFileName);
+//            if (file.exists()) {
+//                globalJscsBin.add(file);
+//            }
+//        }
+//        globalJscsBin.addAll(nodeModules);
+        return globalJscsBin;
+    }
+
 //    @NotNull
 //    public static List<File> searchForRTBin(File projectRoot) {
 ////        List<File> nodeModules = searchProjectNodeModules(projectRoot);
 //        List<File> globalRTBin = listPossibleRTExe(exeFileName);
-//
+
 //        if (SystemInfo.isWindows) {
 //            File file = resolvePath(projectRoot, NODE_MODULES, ".bin", "rt.cmd");
 //            if (file.exists()) {

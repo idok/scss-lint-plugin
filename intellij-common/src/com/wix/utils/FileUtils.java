@@ -274,4 +274,48 @@ public final class FileUtils {
         }
         return file;
     }
+
+
+    public static String join(String file, String ext) {
+        return file + '/' + ext;
+    }
+
+    public static String removeExt(String file, String ext) {
+        if (file.endsWith(ext)) {
+            return file.replace(ext, "");
+        }
+        return file;
+    }
+
+    public static String relativePath(VirtualFile root, VirtualFile file) {
+        // get project relative path
+        return file.getPath().substring(root.getPath().length() + 1);
+    }
+
+    public static String getNormalizedPath(int doubleDotCount, String[] pathsOfPath) {
+        StringBuilder newValuePath = new StringBuilder();
+        for (int i = 0; i < pathsOfPath.length - doubleDotCount; i++) {
+            if (0 != i) {
+                newValuePath.append('/');
+            }
+            newValuePath.append(pathsOfPath[i]);
+        }
+        return newValuePath.toString();
+    }
+
+    public static int getDoubleDotCount(String valuePath) {
+        int doubleDotCount = (valuePath.length() - valuePath.replaceAll("\\.\\.", "").length()) / 2;
+        boolean doubleDotCountTrues = false;
+
+        while (!doubleDotCountTrues && 0 != doubleDotCount) {
+            if (valuePath.startsWith(StringUtil.repeat("../", doubleDotCount))) {
+                doubleDotCountTrues = true;
+            } else if (valuePath.startsWith(StringUtil.repeat("../", doubleDotCount - 1) + "..")) {
+                doubleDotCountTrues = true;
+            } else {
+                doubleDotCount--;
+            }
+        }
+        return doubleDotCount;
+    }
 }

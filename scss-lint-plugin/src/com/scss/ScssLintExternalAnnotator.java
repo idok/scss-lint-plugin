@@ -29,21 +29,20 @@ import com.scss.settings.ScssLintSettingsPage;
 import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.Lint;
 import com.scss.utils.scssLint.LintResult;
-import com.wix.ActualFile;
-import com.wix.ActualFile2;
 import com.wix.ThreadLocalActualFile;
-import com.wix.ThreadLocalTempActualFile;
 import com.wix.annotator.AnnotatorUtils;
-import com.wix.utils.FileUtils;
+import com.wix.files.ActualFileManager;
+import com.wix.files.BaseActualFile;
+import com.wix.files.ThreadLocalTempActualFile;
 import com.wix.utils.PsiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
 //import org.jetbrains.plugins.scss.SCSSFileType;
 //import org.jetbrains.plugins.scss.psi.SCSSFile;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * @author idok
@@ -103,8 +102,8 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
         if (annotationResult.result == null || annotationResult.result.lint == null || annotationResult.result.lint.isEmpty()) {
             return;
         }
-        String relativeFile = FileUtils.makeRelative(file.getProject(), file.getVirtualFile());
-        List<Lint.Issue> issues = annotationResult.result.lint.get(relativeFile);
+        // String relativeFile = FileUtils.makeRelative(file.getProject(), file.getVirtualFile());
+        List<Lint.Issue> issues = annotationResult.result.lint.values().iterator().next();
         if (issues == null) {
             return;
         }
@@ -235,10 +234,12 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
-        ActualFile2 actualCodeFile = null;
+        BaseActualFile actualCodeFile = null;
         try {
             PsiFile file = collectedInfo.psiFile;
-            if (!isScssFile(file)) return null;
+            if (!isScssFile(file)) {
+                return null;
+            }
             ScssLintProjectComponent component = file.getProject().getComponent(ScssLintProjectComponent.class);
             if (!component.isEnabled()) {
                 return new ScssLintAnnotationResult(collectedInfo, null, "SCSS Lint is available for this file but is not configured");
@@ -248,13 +249,12 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             }
 
             ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
-            String relativeFile;
-            actualCodeFile = ActualFile2.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
+            actualCodeFile = ActualFileManager.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
             if (actualCodeFile == null) {
+                LOG.warn("Failed to create file for lint");
                 return null;
             }
-            relativeFile = FileUtils.makeRelative(new File(file.getProject().getBasePath()), actualCodeFile.getActualFile());
-            LintResult result = ScssLintRunner.runLint(file.getProject().getBasePath(), relativeFile, component.scssLintExecutable, component.scssLintConfigFile);
+            LintResult result = ScssLintRunner.runLint(actualCodeFile.getCwd(), actualCodeFile.getPath(), component.scssLintExecutable, component.scssLintConfigFile);
 
             if (StringUtils.isNotEmpty(result.errorOutput)) {
                 component.showInfoNotification(result.errorOutput, NotificationType.WARNING);
@@ -271,9 +271,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             LOG.error("Error running ScssLint inspection: ", e);
             ScssLintProjectComponent.showNotification("Error running SCSS Lint inspection: " + e.getMessage(), NotificationType.ERROR);
         } finally {
-            if (actualCodeFile != null) {
-                actualCodeFile.deleteTemp();
-            }
+            ActualFileManager.dispose(actualCodeFile);
         }
         return null;
     }

@@ -19,6 +19,8 @@ public class ScssLintConfigFileChangeTracker {
     private final AtomicBoolean TRACKING = new AtomicBoolean(false);
     private final Project project;
 
+    public static final String SCSS_LINT_YAML_NAME = ".scss-lint.yaml";
+
     public ScssLintConfigFileChangeTracker(@NotNull Project project) {
         this.project = project;
     }
@@ -45,7 +47,7 @@ public class ScssLintConfigFileChangeTracker {
 
     private void onChange(@NotNull VirtualFile file) {
 //        if (file.getFileType().equals(ScssLintConfigFileType.INSTANCE) && !project.isDisposed()) {
-        if (ScssLintConfigFileType.isScssConfigFile(file.getName()) && !project.isDisposed()) {
+        if (SCSS_LINT_YAML_NAME.equals(file.getName()) && !project.isDisposed()) {
             restartCodeAnalyzerIfNeeded();
         }
     }

@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,36 +19,36 @@ import java.io.IOException;
 public class ActualFile {
     private static final Logger LOG = Logger.getInstance(Util.LOG_ID);
 
-    private ActualFile(File file, boolean isTemp) {
+    ActualFile(File file, File tempFile) {
         this.file = file;
-        this.isTemp = isTemp;
+        this.tempFile = tempFile;
     }
 
-    private ActualFile(File file) {
-        this(file, false);
+    ActualFile(File file) {
+        this(file, null);
     }
 
     private final File file;
-    private final boolean isTemp;
+    private final File tempFile;
 
     public File getFile() {
         return file;
     }
 
+    public File getActualFile() {
+        if (tempFile != null) {
+            return tempFile;
+        }
+        return file;
+    }
+
     public void deleteTemp() {
-        if (isTemp) {
-            boolean isDeleted = file.delete();
+        if (tempFile != null && tempFile.exists() && tempFile.isFile()) {
+            boolean isDeleted = tempFile.delete();
             if (!isDeleted) {
                 LOG.debug("Failed to delete temp file");
             }
         }
-    }
-
-    private static final Key<ThreadLocalActualFile> SCSS_LINT_TEMP_FILE_KEY = Key.create("SCSS_LINT_TEMP_FILE_KEY");
-
-    @Nullable
-    public static ActualFile getOrCreateActualFile(@NotNull VirtualFile virtualFile, @Nullable String content) {
-        return getOrCreateActualFile(SCSS_LINT_TEMP_FILE_KEY, virtualFile, content);
     }
 
     @Nullable
@@ -78,7 +79,7 @@ public class ActualFile {
         }
         try {
             FileUtil.writeToFile(file, content);
-            return new ActualFile(file, threadLocal.isTemp);
+            return new ActualFile(new File(virtualFile.getPath()), file);
         } catch (IOException e) {
             LOG.warn("Can not write to " + file.getAbsolutePath(), e);
         }

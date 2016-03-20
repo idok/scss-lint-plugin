@@ -16,7 +16,8 @@ import java.io.IOException;
 public class ThreadLocalActualFile extends ThreadLocal<String> {
     private final String baseName;
     private final String extension;
-    private final VirtualFile file;
+    private final VirtualFile originalFile;
+    private File tempFile;
     private static final Logger LOG = Logger.getInstance(Util.LOG_ID);
 
     public boolean isTemp;
@@ -24,10 +25,14 @@ public class ThreadLocalActualFile extends ThreadLocal<String> {
     private static final String SCSS_LINT_TMP = "_scsslint_tmp";
     private static final String TEMP_DIR_NAME = "intellij-scsslint-temp";
 
-    public ThreadLocalActualFile(@NotNull VirtualFile file) {
-        this.baseName = file.getNameWithoutExtension();
-        this.extension = FileUtils.getExtensionWithDot(file);
-        this.file = file;
+    public ThreadLocalActualFile(@NotNull VirtualFile originalFile) {
+        this.baseName = originalFile.getNameWithoutExtension();
+        this.extension = FileUtils.getExtensionWithDot(originalFile);
+        this.originalFile = originalFile;
+    }
+
+    public VirtualFile getFile() {
+        return originalFile;
     }
 
     @Nullable
@@ -42,6 +47,7 @@ public class ThreadLocalActualFile extends ThreadLocal<String> {
         File file = createFile();
         if (file != null) {
             set(file.getAbsolutePath());
+            tempFile = file;
             return file;
         }
         return null;
@@ -62,17 +68,25 @@ public class ThreadLocalActualFile extends ThreadLocal<String> {
         return null;
     }
 
-    @Nullable
-    private File createFile() {
-//        File retFile = new File(file.getParent().getPath(), file.getNameWithoutExtension() + "_jscs_tmp." + file.getExtension());
+    private File createFileAsSibling() {
         File retFile;
         try {
             // try to create a temp file next to original file
-            retFile = File.createTempFile(this.baseName + SCSS_LINT_TMP, this.extension, new File(file.getParent().getPath()));
+            retFile = File.createTempFile(this.baseName + SCSS_LINT_TMP, this.extension, new File(originalFile.getParent().getPath()));
             isTemp = true;
             return retFile;
         } catch (IOException e) {
             LOG.warn("Can not create temp file", e);
+        }
+        return null;
+    }
+
+    @Nullable
+    private File createFile() {
+//        File retFile = new File(file.getParent().getPath(), file.getNameWithoutExtension() + "_jscs_tmp." + file.getExtension());
+        File retFile = createFileAsSibling();
+        if (retFile != null) {
+            return retFile;
         }
 
         // try to create a temp file in temp folder

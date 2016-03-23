@@ -35,7 +35,7 @@ public final class ActualFileManager {
         // TEMP File
         ThreadLocalTempActualFile threadLocal = key.get(virtualFile);
         if (threadLocal == null) {
-            threadLocal = virtualFile.putUserDataIfAbsent(key, new ThreadLocalTempActualFile(psiFile));
+            threadLocal = virtualFile.putUserDataIfAbsent(key, new ThreadLocalTempActualFile("scss-temp", psiFile));
         }
         RelativeFile file = threadLocal.getOrCreateFile();
         if (file == null) {

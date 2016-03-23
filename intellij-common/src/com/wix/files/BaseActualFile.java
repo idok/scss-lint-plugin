@@ -1,8 +1,6 @@
 package com.wix.files;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiFile;
-import com.wix.Util;
 import com.wix.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,15 +10,13 @@ import java.io.File;
  * Process target file, either the real file or a temp file
  */
 public abstract class BaseActualFile {
-    private static final Logger LOG = Logger.getInstance(Util.LOG_ID);
-
-    protected BaseActualFile(PsiFile psiFile, File file) {
+    BaseActualFile(PsiFile psiFile, File file) {
         this.file = file;
         this.psiFile = psiFile;
     }
 
     protected final File file;
-    protected final PsiFile psiFile;
+    private final PsiFile psiFile;
 
     public File getActualFile() {
         return file;

@@ -19,7 +19,8 @@ public class ScssLintConfigFileChangeTracker {
     private final AtomicBoolean TRACKING = new AtomicBoolean(false);
     private final Project project;
 
-    public static final String SCSS_LINT_YAML_NAME = ".scss-lint.yaml";
+//    public static final String SCSS_LINT_YAML_NAME = ".scss-lint.yaml";
+    public static final String SCSS_LINT_YML = ".scss-lint.yml";
 
     public ScssLintConfigFileChangeTracker(@NotNull Project project) {
         this.project = project;
@@ -47,7 +48,7 @@ public class ScssLintConfigFileChangeTracker {
 
     private void onChange(@NotNull VirtualFile file) {
 //        if (file.getFileType().equals(ScssLintConfigFileType.INSTANCE) && !project.isDisposed()) {
-        if (SCSS_LINT_YAML_NAME.equals(file.getName()) && !project.isDisposed()) {
+        if (SCSS_LINT_YML.equals(file.getName()) && !project.isDisposed()) {
             restartCodeAnalyzerIfNeeded();
         }
     }
@@ -59,7 +60,7 @@ public class ScssLintConfigFileChangeTracker {
         }
     }
 
-    private class ScssLintConfigFileDocumentListener extends DocumentAdapter {
+    private final class ScssLintConfigFileDocumentListener extends DocumentAdapter {
         private ScssLintConfigFileDocumentListener() {
         }
 
@@ -74,7 +75,7 @@ public class ScssLintConfigFileChangeTracker {
         }
     }
 
-    private class ScssLintConfigFileVfsListener extends VirtualFileAdapter {
+    private final class ScssLintConfigFileVfsListener extends VirtualFileAdapter {
         private ScssLintConfigFileVfsListener() {
         }
 

@@ -15,6 +15,7 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.profile.codeInspection.InspectionProjectProfileManager;
@@ -33,12 +34,15 @@ import com.wix.ThreadLocalActualFile;
 import com.wix.annotator.AnnotatorUtils;
 import com.wix.files.ActualFileManager;
 import com.wix.files.BaseActualFile;
+import com.wix.files.TempFile;
 import com.wix.files.ThreadLocalTempActualFile;
 import com.wix.utils.PsiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 //import org.jetbrains.plugins.scss.SCSSFileType;
@@ -231,6 +235,22 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
 
     private static final Key<ThreadLocalTempActualFile> TEMP_FILE = Key.create("SCSS_LINT_TEMP_FILE");
 
+
+    private static void copyJSCS(Project project, File temp) throws IOException {
+//        copyConfigFile(project, temp, ScssLintConfigFileChangeTracker.SCSS_LINT_YAML_NAME);
+        copyConfigFile(project, temp, ScssLintConfigFileChangeTracker.SCSS_LINT_YML);
+    }
+
+    private static void copyConfigFile(Project project, File temp, String fileName) throws IOException {
+        VirtualFile jscs = project.getBaseDir().findChild(fileName);
+        File tempJscs = new File(temp, fileName);
+        if (jscs != null) {
+            //check if stale?
+            FileUtil.copy(new File(jscs.getPath()), tempJscs);
+            tempJscs.deleteOnExit();
+        }
+    }
+
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
@@ -250,6 +270,10 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
 
             ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
             actualCodeFile = ActualFileManager.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
+            if (actualCodeFile instanceof TempFile) {
+                // copy config
+                 copyJSCS(file.getProject(), new File(actualCodeFile.getCwd()));
+            }
             if (actualCodeFile == null) {
                 LOG.warn("Failed to create file for lint");
                 return null;

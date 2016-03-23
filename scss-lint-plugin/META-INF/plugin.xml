@@ -38,7 +38,8 @@
     <!--<depends optional="true" config-file="scss-config.xml">org.jetbrains.plugins.yaml</depends>-->
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="131"/>
+    <!--<idea-version since-build="131" until-build="143" />-->
+    <idea-version since-build="131" until-build="143" />
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->

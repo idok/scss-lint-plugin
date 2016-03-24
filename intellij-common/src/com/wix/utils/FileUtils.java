@@ -81,7 +81,7 @@ public final class FileUtils {
      * resolve a relative or absolute path
      * @param project parent path
      * @param path path to file / folder
-     * @return
+     * @return path
      */
     public static String resolvePath(Project project, String path) {
         if (StringUtils.isEmpty(path)) {
@@ -308,9 +308,7 @@ public final class FileUtils {
         boolean doubleDotCountTrues = false;
 
         while (!doubleDotCountTrues && 0 != doubleDotCount) {
-            if (valuePath.startsWith(StringUtil.repeat("../", doubleDotCount))) {
-                doubleDotCountTrues = true;
-            } else if (valuePath.startsWith(StringUtil.repeat("../", doubleDotCount - 1) + "..")) {
+            if (valuePath.startsWith(StringUtil.repeat("../", doubleDotCount)) || valuePath.startsWith(StringUtil.repeat("../", doubleDotCount - 1) + "..")) {
                 doubleDotCountTrues = true;
             } else {
                 doubleDotCount--;

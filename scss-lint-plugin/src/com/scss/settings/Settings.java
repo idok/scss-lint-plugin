@@ -15,12 +15,8 @@ public class Settings implements PersistentStateComponent<Settings> {
     public boolean treatAllIssuesAsWarnings;
     public boolean pluginEnabled;
 
-    protected Project project;
-
     public static Settings getInstance(Project project) {
-        Settings settings = ServiceManager.getService(project, Settings.class);
-        settings.project = project;
-        return settings;
+        return ServiceManager.getService(project, Settings.class);
     }
 
     @Nullable

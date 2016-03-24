@@ -7,8 +7,10 @@ import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.newEditor.OptionsEditor;
+//import com.intellij.openapi.options.Configurable;
+//import com.intellij.openapi.options.ex.Settings;
+//import com.intellij.openapi.options.newEditor.OptionsEditor;
+//import com.intellij.openapi.options.newEditor.OptionsEditorContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiElement;
@@ -31,7 +33,7 @@ import java.util.List;
 
 public class ScssLintInspection extends LocalInspectionTool implements BatchSuppressableTool, UnfairLocalInspectionTool { //extends PropertySuppressableInspectionBase {
 
-    public static final String INSPECTION_SHORT_NAME = "ScssLintInspection";
+    private static final String INSPECTION_SHORT_NAME = "ScssLintInspection";
     public static final Key<ScssLintInspection> KEY = Key.create(INSPECTION_SHORT_NAME);
 
     private static final Logger LOG = Logger.getInstance(ScssLintBundle.LOG_ID);
@@ -79,24 +81,53 @@ public class ScssLintInspection extends LocalInspectionTool implements BatchSupp
         settingsLink.addHyperlinkListener(new HyperlinkAdapter() {
             public void hyperlinkActivated(HyperlinkEvent e) {
                 DataContext dataContext = DataManager.getInstance().getDataContext(settingsLink);
-                OptionsEditor optionsEditor = OptionsEditor.KEY.getData(dataContext);
-                if (optionsEditor == null) {
-                    Project project = CommonDataKeys.PROJECT.getData(dataContext);
-                    if (project != null) {
-                        showSettings(project);
-                    }
-                    return;
+                Project project = CommonDataKeys.PROJECT.getData(dataContext);
+                if (project != null) {
+                    showSettings(project);
+//                } else {
+//                    new ScssLintSettingsPage(null).showSettings();
                 }
-                Configurable configurable = optionsEditor.findConfigurableById(ScssLintInspection.this.getId());
-                if (configurable != null) {
-                    optionsEditor.clearSearchAndSelect(configurable);
-                }
+
+//                Settings settings = (Settings) Settings.KEY.getData(dataContext);
+//                if (settings == null) {
+//                    configurable.showEditDialog();
+//                } else {
+//                    settings.select(settings.find(getId()));
+//                }
+//
+//                OptionsEditor optionsEditor = OptionsEditor.KEY.getData(dataContext);
+//                if (optionsEditor == null) {
+//                    Project project = CommonDataKeys.PROJECT.getData(dataContext);
+//                    if (project != null) {
+//                        showSettings(project);
+//                    }
+//                    return;
+//                }
+//                Configurable configurable = optionsEditor.findConfigurableById(ScssLintInspection.this.getId());
+//                if (configurable != null) {
+//                    optionsEditor.clearSearchAndSelect(configurable);
+//                }
+//
+//
+//
+//                Project project = CommonDataKeys.PROJECT.getData(dataContext);
+//                if(project == null) {
+//                    LOG.warn("No project found in data context");
+//                } else {
+//                    JSLinterConfigurable configurable = JSLinterInspection.this.getExternalAnnotatorForBatchInspection().createSettingsConfigurable(project);
+//                    Settings settings = (Settings)Settings.KEY.getData(dataContext);
+//                    if(settings == null) {
+//                        configurable.showEditDialog();
+//                    } else {
+//                        settings.select(settings.find(configurable.getId()));
+//                    }
+//                }
             }
         });
         return settingsLink;
     }
 
-    public static void showSettings(Project project) {
+    static void showSettings(Project project) {
         ScssLintSettingsPage configurable = new ScssLintSettingsPage(project);
         configurable.showSettings();
 //        String dimensionKey = ShowSettingsUtilImpl.createDimensionKey(configurable);

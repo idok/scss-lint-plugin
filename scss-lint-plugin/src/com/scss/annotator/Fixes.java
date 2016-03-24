@@ -7,7 +7,7 @@ public final class Fixes {
     }
 
     public static BaseActionFix getFixForRule(String rule, PsiElement element) {
-        if (rule != null && rule.equals("PropertySortOrder")) {
+        if ("PropertySortOrder".equals(rule)) {
             return new PropertySortOrderFix(element);
         }
         return null;

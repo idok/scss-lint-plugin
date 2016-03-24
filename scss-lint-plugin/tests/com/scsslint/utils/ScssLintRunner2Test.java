@@ -11,11 +11,9 @@ import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static com.scsslint.utils.Settings.*;
 
 public class ScssLintRunner2Test {
-
-    public static final String SCSS_EXE = "/usr/bin/scss-lint";
-    public static final String PLUGIN_ROOT = "/Users/idok/Projects/scss-lint-plugin/scss-lint-plugin/scss-lint-plugin";
     public static final String CONFIG = "";
 
     private static ScssLintRunner.ScssLintSettings createSettings(String targetFile) {
@@ -31,16 +29,12 @@ public class ScssLintRunner2Test {
         String scssFile = "testData/one.scss";
 //        String scssFile = PLUGIN_ROOT + "/testData/one.scss";
         ScssLintRunner.ScssLintSettings settings = createSettings(scssFile);
-        try {
-            LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_EXE, CONFIG);
+        LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_EXE, CONFIG);
 //            System.out.println(result.lint.file.name);
 //            System.out.println(result.lint.file.issues.size());
 //            assertEquals("file name should match", scssFile, result.lint.file.name);
-            assertEquals("should have 1 issue", 1, result.lint.get(scssFile).size());
+        assertEquals("should have 1 issue", 1, result.lint.get(scssFile).size());
 //            assertEquals("should have 1 issue", "1", result.lint.file.issues.get(0).reason);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test

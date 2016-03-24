@@ -30,7 +30,7 @@
               <text value="Let scss-lint &amp;search for config in current directory or user home"/>
             </properties>
           </component>
-          <component id="36405" class="javax.swing.JRadioButton" binding="useProjectConfigRadioButton">
+          <component id="36405" class="javax.swing.JRadioButton" binding="useSpecificConfigRadioButton">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>

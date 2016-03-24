@@ -30,7 +30,6 @@ import com.scss.settings.ScssLintSettingsPage;
 import com.scss.utils.ScssLintRunner;
 import com.scss.utils.scssLint.Lint;
 import com.scss.utils.scssLint.LintResult;
-import com.wix.ThreadLocalActualFile;
 import com.wix.annotator.AnnotatorUtils;
 import com.wix.files.ActualFileManager;
 import com.wix.files.BaseActualFile;
@@ -53,9 +52,9 @@ import java.util.List;
  */
 public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotationInput, ScssLintAnnotationResult> {
 
-    public static final ScssLintExternalAnnotator INSTANCE = new ScssLintExternalAnnotator();
+//    public static final ScssLintExternalAnnotator INSTANCE = new ScssLintExternalAnnotator();
     private static final Logger LOG = Logger.getInstance(ScssLintBundle.LOG_ID);
-    private static final Key<ThreadLocalActualFile> SCSS_TEMP_FILE_KEY = Key.create("SCSS_TEMP_FILE");
+//    private static final Key<ThreadLocalActualFile> SCSS_TEMP_FILE_KEY = Key.create("SCSS_TEMP_FILE");
     public static final String SCSS = "scss";
 
     @Nullable
@@ -183,7 +182,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
           holder.createAnnotation(severity, range, message); as it is not supported in PhpStorm: 7.1.3 (PS-133.982)
           https://github.com/idok/scss-lint-plugin/issues/5
          */
-        if (severity == HighlightSeverity.ERROR) {
+        if (severity.equals(HighlightSeverity.ERROR)) {
             return holder.createErrorAnnotation(range, message);
         }
         return holder.createWarningAnnotation(range, message);
@@ -236,8 +235,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     private static final Key<ThreadLocalTempActualFile> TEMP_FILE = Key.create("SCSS_LINT_TEMP_FILE");
 
 
-    private static void copyJSCS(Project project, File temp) throws IOException {
-//        copyConfigFile(project, temp, ScssLintConfigFileChangeTracker.SCSS_LINT_YAML_NAME);
+    private static void copyConfig(Project project, File temp) throws IOException {
         copyConfigFile(project, temp, ScssLintConfigFileChangeTracker.SCSS_LINT_YML);
     }
 
@@ -254,7 +252,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
     @Nullable
     @Override
     public ScssLintAnnotationResult doAnnotate(ScssLintAnnotationInput collectedInfo) {
-        BaseActualFile actualCodeFile = null;
+        BaseActualFile actualFile = null;
         try {
             PsiFile file = collectedInfo.psiFile;
             if (!isScssFile(file)) {
@@ -269,16 +267,15 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             }
 
             ScssLintConfigFileChangeTracker.getInstance(collectedInfo.project).startIfNeeded();
-            actualCodeFile = ActualFileManager.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
-            if (actualCodeFile instanceof TempFile) {
-                // copy config
-                 copyJSCS(file.getProject(), new File(actualCodeFile.getCwd()));
+            actualFile = ActualFileManager.getOrCreateActualFile(TEMP_FILE, file, collectedInfo.fileContent);
+            if (actualFile instanceof TempFile) {
+                 copyConfig(file.getProject(), new File(actualFile.getCwd()));
             }
-            if (actualCodeFile == null) {
+            if (actualFile == null) {
                 LOG.warn("Failed to create file for lint");
                 return null;
             }
-            LintResult result = ScssLintRunner.runLint(actualCodeFile.getCwd(), actualCodeFile.getPath(), component.scssLintExecutable, component.scssLintConfigFile);
+            LintResult result = ScssLintRunner.runLint(actualFile.getCwd(), actualFile.getPath(), component.scssLintExecutable, component.scssLintConfigFile);
 
             if (StringUtils.isNotEmpty(result.errorOutput)) {
                 component.showInfoNotification(result.errorOutput, NotificationType.WARNING);
@@ -295,7 +292,7 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
             LOG.error("Error running ScssLint inspection: ", e);
             ScssLintProjectComponent.showNotification("Error running SCSS Lint inspection: " + e.getMessage(), NotificationType.ERROR);
         } finally {
-            ActualFileManager.dispose(actualCodeFile);
+            ActualFileManager.dispose(actualFile);
         }
         return null;
     }

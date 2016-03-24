@@ -19,7 +19,6 @@ public class ScssLintConfigFileChangeTracker {
     private final AtomicBoolean TRACKING = new AtomicBoolean(false);
     private final Project project;
 
-//    public static final String SCSS_LINT_YAML_NAME = ".scss-lint.yaml";
     public static final String SCSS_LINT_YML = ".scss-lint.yml";
 
     public ScssLintConfigFileChangeTracker(@NotNull Project project) {

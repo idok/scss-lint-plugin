@@ -16,13 +16,13 @@ import javax.swing.Icon;
 import com.scss.settings.ScssLintSettingsPage;
 import org.jetbrains.annotations.NotNull;
 
-public class EditSettingsAction implements IntentionAction, Iconable, HighPriorityAction {
-    private static boolean ourInvoked = false;
+class EditSettingsAction implements IntentionAction, Iconable, HighPriorityAction {
+    private static boolean ourInvoked;
     private final boolean fileLevelAnnotation;
     private final Icon icon;
     private final ScssLintSettingsPage configurable;
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable) {
+    EditSettingsAction(@NotNull ScssLintSettingsPage configurable) {
         this(configurable, false, General.Settings);
     }
 
@@ -34,7 +34,7 @@ public class EditSettingsAction implements IntentionAction, Iconable, HighPriori
         this(configurable, fileLevelAnnotation, General.Settings);
     }
 
-    public EditSettingsAction(@NotNull ScssLintSettingsPage configurable, boolean fileLevelAnnotation, @NotNull Icon icon) {
+    private EditSettingsAction(@NotNull ScssLintSettingsPage configurable, boolean fileLevelAnnotation, @NotNull Icon icon) {
         this.configurable = configurable;
         this.fileLevelAnnotation = fileLevelAnnotation;
         this.icon = icon;

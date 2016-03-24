@@ -44,15 +44,10 @@ public final class ScssLintRunner {
     }
 
     public static ScssLintSettings buildSettings(@NotNull String cwd, @NotNull String path, @NotNull String scssLintExe, @Nullable String config) {
-        ScssLintSettings settings = new ScssLintSettings();
-        settings.cwd = cwd;
-        settings.scssLintExe = scssLintExe;
-        settings.config = config;
-        settings.targetFile = path;
-        return settings;
+        return new ScssLintSettings(config, cwd, path, scssLintExe);
     }
 
-    public static LintResult runLint(@NotNull String cwd, @NotNull String file, @NotNull String scssLintExe, @Nullable String config) throws ExecutionException {
+    public static LintResult runLint(@NotNull String cwd, @NotNull String file, @NotNull String scssLintExe, @Nullable String config) {
         LintResult result = new LintResult();
         try {
             ProcessOutput out = lint(cwd, file, scssLintExe, config);

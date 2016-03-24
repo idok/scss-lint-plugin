@@ -23,7 +23,7 @@ public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
         return false;
     }
 
-    protected void doTest(final String file) {
+    private void doTest(final String file) {
         Project project = myFixture.getProject();
         Settings settings = Settings.getInstance(project);
 //        settings.scssLintExecutable = ScssLintRunnerTest.SCSS_LINT_BIN;
@@ -36,9 +36,9 @@ public class ScssLintTest extends LightPlatformCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(true, false, true);
     }
 
-    protected void doTest() {
+    private void doTest() {
         String name = getTestName(false).replaceAll("_", "-");
-        doTest("/inspections/" + name + "." + ScssLintExternalAnnotator.SCSS);
+        doTest("/inspections/" + name + '.' + ScssLintExternalAnnotator.SCSS);
     }
 
     public void testCapitalizationInSelector() {

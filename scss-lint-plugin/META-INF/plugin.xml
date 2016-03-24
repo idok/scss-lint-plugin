@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.0.17</version>
+    <version>1.1.0</version>
     <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
@@ -10,6 +10,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
+       <p>1.1.0  Idea 145 compatibility</p>
        <p>1.0.17 Bug fixes</p>
        <p>1.0.16 Bug fixes</p>
        <p>1.0.15 Bug fixes</p>
@@ -39,7 +40,7 @@
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
     <!--<idea-version since-build="131" until-build="143" />-->
-    <idea-version since-build="131" until-build="143" />
+    <idea-version since-build="145" />
 
     <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->

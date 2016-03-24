@@ -37,17 +37,17 @@ import java.io.File;
 import java.util.List;
 
 public class ScssLintSettingsPage implements Configurable {
-    public static final String FIX_IT = "Fix it";
-    public static final String HOW_TO_USE_SCSSLINT = "How to Use SCSS Lint";
-    public static final String HOW_TO_USE_LINK = "https://github.com/idok/scss-lint-plugin";
-    protected Project project;
+    private static final String FIX_IT = "Fix it";
+    private static final String HOW_TO_USE_SCSS_LINT = "How to Use SCSS Lint";
+    private static final String HOW_TO_USE_LINK = "https://github.com/idok/scss-lint-plugin";
+    private final Project project;
 
     private JCheckBox pluginEnabledCheckbox;
     private JPanel panel;
     private JPanel errorPanel;
     private TextFieldWithHistoryWithBrowseButton scssLintConfigFile;
     private JRadioButton searchForConfigInRadioButton;
-    private JRadioButton useProjectConfigRadioButton;
+    private JRadioButton useSpecificConfigRadioButton;
     private HyperlinkLabel usageLink;
     private JLabel ScssLintConfigFilePathLabel;
     private JCheckBox treatAllIssuesCheckBox;
@@ -60,7 +60,12 @@ public class ScssLintSettingsPage implements Configurable {
         this.project = project;
         configESLintBinField();
         configScssLintConfigField();
-        useProjectConfigRadioButton.addItemListener(new ItemListener() {
+        this.packagesNotificationPanel = new PackagesNotificationPanel(project);
+        errorPanel.add(this.packagesNotificationPanel.getComponent(), BorderLayout.CENTER);
+    }
+
+    private void addListeners() {
+        useSpecificConfigRadioButton.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 scssLintConfigFile.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
             }
@@ -71,10 +76,6 @@ public class ScssLintSettingsPage implements Configurable {
                 setEnabledState(enabled);
             }
         });
-
-        this.packagesNotificationPanel = new PackagesNotificationPanel(project);
-        errorPanel.add(this.packagesNotificationPanel.getComponent(), BorderLayout.CENTER);
-
         DocumentAdapter docAdp = new DocumentAdapter() {
             protected void textChanged(DocumentEvent e) {
                 updateLaterInEDT();
@@ -82,7 +83,6 @@ public class ScssLintSettingsPage implements Configurable {
         };
         scssLintExeField.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
         scssLintConfigFile.getChildComponent().getTextEditor().getDocument().addDocumentListener(docAdp);
-        getVersion();
     }
 
     private void updateLaterInEDT() {
@@ -99,9 +99,9 @@ public class ScssLintSettingsPage implements Configurable {
     }
 
     private void setEnabledState(boolean enabled) {
-        scssLintConfigFile.setEnabled(enabled);
         searchForConfigInRadioButton.setEnabled(enabled);
-        useProjectConfigRadioButton.setEnabled(enabled);
+        useSpecificConfigRadioButton.setEnabled(enabled);
+        scssLintConfigFile.setEnabled(enabled && useSpecificConfigRadioButton.isSelected());
         scssLintExeField.setEnabled(enabled);
         ScssLintConfigFilePathLabel.setEnabled(enabled);
         scssLintExeLabel.setEnabled(enabled);
@@ -117,28 +117,39 @@ public class ScssLintSettingsPage implements Configurable {
             validator.add(scssLintConfigFile.getChildComponent().getTextEditor(), "Path to Scss Lint config is invalid {{LINK}}", FIX_IT); //Please correct path to
         }
         if (validator.hasErrors()) {
-            getVersion();
+            versionLabel.setText("n.a.");
+        } else {
+            updateVersion();
         }
         packagesNotificationPanel.processErrors(validator);
     }
 
     private ScssLintRunner.ScssLintSettings settings;
 
-    private void getVersion() {
+    private void updateVersion() {
+        String scssExe = scssLintExeField.getChildComponent().getText();
         if (settings != null &&
-                settings.scssLintExe.equals(scssLintExeField.getChildComponent().getText()) &&
+                settings.scssLintExe.equals(scssExe) &&
                 settings.cwd.equals(project.getBasePath())) {
             return;
         }
-        if (StringUtils.isEmpty(scssLintExeField.getChildComponent().getText())) {
+        if (StringUtils.isEmpty(scssExe)) {
+            return;
+        }
+        getVersion(scssExe, project.getBasePath());
+    }
+
+    private void getVersion(String scssExe, String cwd) {
+        if (StringUtils.isEmpty(scssExe)) {
             return;
         }
         settings = new ScssLintRunner.ScssLintSettings();
-        settings.scssLintExe = scssLintExeField.getChildComponent().getText();
-        settings.cwd = project.getBasePath();
+        settings.scssLintExe = scssExe;
+        settings.cwd = cwd;
         try {
             versionLabel.setText(ScssLintRunner.runVersion(settings));
         } catch (Exception e) {
+            versionLabel.setText("error");
             e.printStackTrace();
         }
     }
@@ -192,6 +203,8 @@ public class ScssLintSettingsPage implements Configurable {
     @Override
     public JComponent createComponent() {
         loadSettings();
+        getVersion(scssLintExeField.getChildComponent().getText(), project.getBasePath());
+        addListeners();
         return panel;
     }
 
@@ -204,7 +217,7 @@ public class ScssLintSettingsPage implements Configurable {
     }
 
     private String getLintConfigFile() {
-        return useProjectConfigRadioButton.isSelected() ? scssLintConfigFile.getChildComponent().getText() : "";
+        return useSpecificConfigRadioButton.isSelected() ? scssLintConfigFile.getChildComponent().getText() : "";
     }
 
     @Override
@@ -213,7 +226,7 @@ public class ScssLintSettingsPage implements Configurable {
         PsiManager.getInstance(project).dropResolveCaches();
     }
 
-    protected void saveSettings() {
+    private void saveSettings() {
         Settings settings = getSettings();
         settings.pluginEnabled = pluginEnabledCheckbox.isSelected();
         settings.scssLintExecutable = scssLintExeField.getChildComponent().getText();
@@ -223,14 +236,16 @@ public class ScssLintSettingsPage implements Configurable {
         DaemonCodeAnalyzer.getInstance(project).restart();
     }
 
-    protected void loadSettings() {
+    private void loadSettings() {
         Settings settings = getSettings();
         pluginEnabledCheckbox.setSelected(settings.pluginEnabled);
         scssLintExeField.getChildComponent().setText(settings.scssLintExecutable);
         scssLintConfigFile.getChildComponent().setText(settings.scssLintConfigFile);
-        useProjectConfigRadioButton.setSelected(StringUtils.isNotEmpty(settings.scssLintConfigFile));
-        searchForConfigInRadioButton.setSelected(StringUtils.isEmpty(settings.scssLintConfigFile));
-        scssLintConfigFile.setEnabled(useProjectConfigRadioButton.isSelected());
+
+        boolean hasConfig = StringUtils.isNotEmpty(settings.scssLintConfigFile);
+        searchForConfigInRadioButton.setSelected(!hasConfig);
+        useSpecificConfigRadioButton.setSelected(hasConfig);
+        scssLintConfigFile.setEnabled(hasConfig);
         treatAllIssuesCheckBox.setSelected(settings.treatAllIssuesAsWarnings);
         setEnabledState(settings.pluginEnabled);
     }
@@ -250,7 +265,7 @@ public class ScssLintSettingsPage implements Configurable {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        usageLink = SwingHelper.createWebHyperlink(HOW_TO_USE_SCSSLINT, HOW_TO_USE_LINK);
+        usageLink = SwingHelper.createWebHyperlink(HOW_TO_USE_SCSS_LINT, HOW_TO_USE_LINK);
     }
 
     public void showSettings() {

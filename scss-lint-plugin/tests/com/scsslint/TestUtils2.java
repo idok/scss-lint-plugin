@@ -47,7 +47,7 @@ public final class TestUtils2 {
 // if tests are run using ant script
             "dist/testClasses"};
 
-    private static String TEST_DATA_PATH = null;
+    private static String TEST_DATA_PATH;
 
     public static final String CARET_MARKER = "<caret>";
     public static final String BEGIN_MARKER = "<begin>";
@@ -84,25 +84,25 @@ public final class TestUtils2 {
     }
 
     @Nullable
-    public static String getDataPath(@NotNull Class clazz) {
+    public static String getDataPath(@NotNull Class<?> clazz) {
         final String classDir = getClassRelativePath(clazz);
         String moduleDir = getModulePath(clazz);
         return classDir != null && moduleDir != null ? moduleDir + "/" + classDir + "/data/" : null;
     }
 
-    public static String getOutputPath(final Class clazz) {
+    public static String getOutputPath(final Class<?> clazz) {
         final String classDir = getClassRelativePath(clazz);
         String moduleDir = getModulePath(clazz);
         return classDir != null && moduleDir != null ? moduleDir + "/" + classDir + "/output/" : null;
     }
 
     @Nullable
-    public static String getDataPath(@NotNull Class s, @NotNull final String relativePath) {
+    public static String getDataPath(@NotNull Class<?> s, @NotNull final String relativePath) {
         return getDataPath(s) + "/" + relativePath;
     }
 
     @Nullable
-    public static String getClassRelativePath(@NotNull Class s) {
+    public static String getClassRelativePath(@NotNull Class<?> s) {
         String classFullPath = getClassFullPath(s);
         for (String path : RUN_PATHS) {
             final String dataPath = getClassDirPath(classFullPath, path);
@@ -114,7 +114,7 @@ public final class TestUtils2 {
     }
 
     @Nullable
-    public static String getModulePath(@NotNull Class s) {
+    public static String getModulePath(@NotNull Class<?> s) {
         String classFullPath = getClassFullPath(s);
         for (String path : RUN_PATHS) {
             final String dataPath = getModulePath(classFullPath, path);
@@ -125,7 +125,7 @@ public final class TestUtils2 {
         return null;
     }
 
-    public static String getClassFullPath(@NotNull final Class s) {
+    public static String getClassFullPath(@NotNull final Class<?> s) {
         String name = s.getSimpleName() + ".class";
         final URL url = s.getResource(name);
         return url.getPath();
@@ -156,7 +156,7 @@ public final class TestUtils2 {
                                                  List<Library.ModifiableModel> libModels,
                                                  final String clojureLibraryName, String mockLib, String mockLibSrc) {
         class CustomProcessor implements Processor<Library> {
-            public boolean result = true;
+            private boolean result = true;
 
             public boolean process(Library library) {
                 boolean res = library.getName().equals(clojureLibraryName);
@@ -181,12 +181,12 @@ public final class TestUtils2 {
 
     public static void addLibraryRoots(Library.ModifiableModel libModel, String mockLib, String mockLibSrc) {
         final File libRoot = new File(mockLib);
-        assert (libRoot.exists());
+        assert libRoot.exists();
 
         libModel.addRoot(VfsUtil.getUrlForLibraryRoot(libRoot), OrderRootType.CLASSES);
         if (mockLibSrc != null) {
             final File srcRoot = new File(mockLibSrc);
-            assert (srcRoot.exists());
+            assert srcRoot.exists();
             libModel.addRoot(VfsUtil.getUrlForLibraryRoot(srcRoot), OrderRootType.SOURCES);
         }
         ((VirtualFilePointerManagerImpl) VirtualFilePointerManager.getInstance()).storePointers();

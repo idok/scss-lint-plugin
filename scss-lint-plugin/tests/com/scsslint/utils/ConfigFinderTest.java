@@ -3,11 +3,9 @@ package com.scsslint.utils;
 import com.scss.utils.ConfigFinder;
 import com.scss.utils.ScssLintRunner;
 import org.junit.Test;
+import static com.scsslint.utils.Settings.*;
 
 public class ConfigFinderTest {
-
-    public static final String SCSS_EXE = "/usr/bin/scss-lint";
-    public static final String PLUGIN_ROOT = "/Users/idok/Projects/scss-lint-plugin/scss-lint-plugin/scss-lint-plugin";
     public static final String CONFIG = "";
 
     private static ScssLintRunner.ScssLintSettings createSettings(String targetFile) {

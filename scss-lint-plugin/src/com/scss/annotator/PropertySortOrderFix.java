@@ -32,8 +32,8 @@ public class PropertySortOrderFix extends BaseActionFix {
     @Override
     public void fix(@NotNull Project project, Editor editor, PsiFile file, PsiElement start) throws IncorrectOperationException {
         CssBlock block = PsiTreeUtil.getParentOfType(start, CssBlock.class);
-        CssDeclaration declarations[] = block.getDeclarations();
-        CssDeclaration sorted[] = new CssDeclaration[declarations.length];
+        CssDeclaration[] declarations = block.getDeclarations();
+        CssDeclaration[] sorted = new CssDeclaration[declarations.length];
         for (int i = 0; i < sorted.length; i++) {
             sorted[i] = (CssDeclaration) declarations[i].copy();
         }

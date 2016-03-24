@@ -10,9 +10,6 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Created by idok on 8/19/14.
- */
 public final class AnnotatorUtils {
     private AnnotatorUtils() {
     }

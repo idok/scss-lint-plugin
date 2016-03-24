@@ -6,9 +6,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 
-/**
- * Created by idok on 11/27/14.
- */
 public final class ValidationUtils {
 
     private ValidationUtils() {

@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/idok/scss-lint-plugin">
     <id>com.wix.scss.lint</id>
     <name>scss-lint</name>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <vendor email="sir_simon_x@yahoo.com" url="https://github.com/idok">Ido</vendor>
     <category>HTML/CSS Development</category>
     <description><![CDATA[
@@ -10,6 +10,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
+       <p>1.1.2  Bug fixes</p>
        <p>1.1.1  Bug fixes</p>
        <p>1.1.0  Idea 145 compatibility</p>
        <p>1.0.17 Bug fixes</p>

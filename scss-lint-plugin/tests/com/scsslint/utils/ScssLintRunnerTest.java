@@ -32,11 +32,8 @@ public class ScssLintRunnerTest {
         LintResult result = ScssLintRunner.runLint(settings.cwd, settings.targetFile, SCSS_EXE, CONFIG);
 //            System.out.println(result.lint.file.name);
 //            System.out.println(result.lint.file.issues.size());
-
-
 //            assertEquals("file name should match", scssFile, result.lint.get(scssFile));
         assertEquals("should have 1 issue", 1, result.lint.get(scssFile).size());
-//            assertEquals("should have 1 issue", "1", result.lint.file.issues.get(0).reason);
     }
 
     @Test

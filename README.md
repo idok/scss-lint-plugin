@@ -14,6 +14,7 @@ To get started, you need to set the SCSS Lint plugin settings:<br/>
 
 * Go to preferences, SCSS Lint plugin page and check the Enable plugin.
 * Select the path to the SCSS Lint executable.
+    * You can use the command `gem environment` to figure out where your gems are installed. Look for `GEM PATHS`. 
 * Set the .scss-lint.yml file, or scss-lint will use the default settings.
 * By default, SCSS Lint plugin annotate the editor with warning or error based on the SCSS Lint configuration, you can check the 'Treat all SCSS Lint issues as warnings' checkbox to display all issues from SCSS Lint as warnings.
 

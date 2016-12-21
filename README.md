@@ -13,9 +13,10 @@ Install scss-lint on your machine see instructions [here](https://github.com/cau
 To get started, you need to set the SCSS Lint plugin settings:<br/>
 
 * Go to preferences, SCSS Lint plugin page and check the Enable plugin.
-* Select the path to the SCSS Lint executable.
+* Select the path to the SCSS Lint executable. (for windows users this might be your [rubypath]\bin\scss-lint.bat)
 * Set the .scss-lint.yml file, or scss-lint will use the default settings.
 * By default, SCSS Lint plugin annotate the editor with warning or error based on the SCSS Lint configuration, you can check the 'Treat all SCSS Lint issues as warnings' checkbox to display all issues from SCSS Lint as warnings.
+
 
 Configuration:<br/>
 ![ESLint config](https://raw.githubusercontent.com/idok/scss-lint-plugin/master/scss-lint-plugin/docs/Settings.png)

@@ -40,6 +40,11 @@ class EditSettingsAction implements IntentionAction, Iconable, HighPriorityActio
         this.icon = icon;
     }
 
+    @NotNull
+    public Priority getPriority() {
+        return Priority.HIGH;
+    }
+
     public Icon getIcon(@IconFlags int flags) {
         return this.icon;
     }

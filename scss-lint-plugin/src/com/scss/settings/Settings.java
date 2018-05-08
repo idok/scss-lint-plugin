@@ -5,10 +5,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "ScssLintProjectComponent",
-        storages = {
-                @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE),
-                @Storage(id = "dir", file = StoragePathMacros.PROJECT_CONFIG_DIR + "/scssLintPlugin.xml", scheme = StorageScheme.DIRECTORY_BASED)})
+@State(
+        name = "ScssLintProjectComponent",
+        storages = {@Storage("scssLintPlugin.xml")}
+)
 public class Settings implements PersistentStateComponent<Settings> {
     public String scssLintConfigFile = "";
     public String scssLintExecutable = "";

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 @State(
         name = "ScssLintProjectComponent",
-        storages = {@Storage("scssLintPlugin.xml")}
+        storages = @Storage("scssLintPlugin.xml")
 )
 public class Settings implements PersistentStateComponent<Settings> {
     public String scssLintConfigFile = "";

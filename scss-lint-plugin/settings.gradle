@@ -1,0 +1,3 @@
+rootProject.name = 'scss-lint'
+include 'intellij-common'
+

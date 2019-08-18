@@ -16,3 +16,5 @@ Icon
 
 .idea
 out
+
+/scss-lint-test

@@ -52,12 +52,20 @@ Icon
 .Spotlight-V100
 .Trashes
 
+# gradle
+.gradle
+/build
+gradle.properties
+
 node_modules
 coverage
 target
-build
 npm-debug.log
 
 temp
 
 scss-lint-plugin.zip
+
+/lib
+/scss-lint-plugin
+/.idea2

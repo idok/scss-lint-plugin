@@ -62,10 +62,4 @@ coverage
 target
 npm-debug.log
 
-temp
-
-scss-lint-plugin.zip
-
-/lib
-/scss-lint-plugin
-/.idea2
+/temp

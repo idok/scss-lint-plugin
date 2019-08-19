@@ -1,6 +1,5 @@
 package com.scss;
 
-import com.scss.settings.Settings;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
@@ -8,11 +7,10 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.scss.settings.Settings;
 import com.wix.utils.FileUtils;
 import com.wix.utils.FileUtils.ValidationStatus;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.event.HyperlinkEvent;
 
 public class ScssLintProjectComponent implements ProjectComponent {
     public static final String FIX_CONFIG_HREF = "\n<a href=\"#\">Fix Configuration</a>";
@@ -67,6 +65,10 @@ public class ScssLintProjectComponent implements ProjectComponent {
 
     public boolean isEnabled() {
         return Settings.getInstance(project).pluginEnabled;
+    }
+
+    public boolean isDismissConfigurationHints() {
+        return Settings.getInstance(project).dismissConfigurationHints;
     }
 
     public boolean isSettingsValid() {

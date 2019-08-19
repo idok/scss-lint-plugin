@@ -44,9 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-//import org.jetbrains.plugins.scss.SCSSFileType;
-//import org.jetbrains.plugins.scss.psi.SCSSFile;
-
 /**
  * @author idok
  */
@@ -257,7 +254,10 @@ public class ScssLintExternalAnnotator extends ExternalAnnotator<ScssLintAnnotat
                 return null;
             }
             ScssLintProjectComponent component = file.getProject().getComponent(ScssLintProjectComponent.class);
-            if (!component.isEnabled() && !component.dismissConfigurationHints) {
+            if (!component.isEnabled()) {
+                if (component.isDismissConfigurationHints()) {
+                    return null;
+                }
                 return new ScssLintAnnotationResult(collectedInfo, null, "SCSS Lint is available for this file but is not configured");
             }
             if (!component.isSettingsValid()) {

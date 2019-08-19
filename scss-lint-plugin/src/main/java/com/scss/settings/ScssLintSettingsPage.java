@@ -13,7 +13,6 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.TextFieldWithHistory;
 import com.intellij.ui.TextFieldWithHistoryWithBrowseButton;
-import com.intellij.util.NotNullProducer;
 import com.intellij.util.ui.SwingHelper;
 import com.intellij.util.ui.UIUtil;
 import com.scss.ScssLintProjectComponent;
@@ -33,6 +32,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScssLintSettingsPage implements Configurable {
@@ -169,6 +169,7 @@ public class ScssLintSettingsPage implements Configurable {
                 File projectRoot = new File(f);
                 return ScssLintFinder.searchForLintConfigFiles(projectRoot);
             }
+            return new ArrayList<>();
         });
 
         SwingHelper.installFileCompletionAndBrowseDialog(project, scssLintConfigFile, "Select SCSS Lint Config", FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor());

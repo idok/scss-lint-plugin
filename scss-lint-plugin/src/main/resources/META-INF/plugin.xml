@@ -10,6 +10,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
+       <p>2.1.1  Bug fixes</p>
        <p>2.1.0  Allow to dismiss configuration setting notice</p>
        <p>2.0.1  Fix compatibility issue with Idea 2018.1</p>
        <p>2.0.0  Fix compatibility issue with Idea 2018</p>
